@@ -1,6 +1,9 @@
-// index.js (en la raíz del proyecto)
+import { loadEnvFile } from 'node:process';
 import express from "express";
+import sequelize from './src/config/db.config.js';
 
+
+loadEnvFile()
 const app = express();
 const PORT = process.env.APP_PORT || 3000;
 
@@ -8,10 +11,11 @@ const PORT = process.env.APP_PORT || 3000;
 app.use(express.json());
 
 
-// Ruta de prueba
+// Rutas
 app.get("/", (req, res) => {
   res.send("¡Backend funcionando!");
 });
+
 
 // Iniciar servidor 
 async function startServer() {
@@ -20,6 +24,13 @@ async function startServer() {
     app.listen(PORT, () => {
       console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
     });
+
+    await sequelize.authenticate();
+    console.log('✅ Conexión a la base de datos establecida correctamente.');
+
+    await sequelize.sync({ force: false }); //true solo en desarrollo
+    console.log('✅ Base de datos sincronizada');
+    
   } catch (error) {
     console.error("❌ No se pudo conectar a la base de datos:", error);
   }
