@@ -41,22 +41,12 @@ const PRODUCTO = sequelize.define('PRODUCTO', {
     allowNull: false,
     field: 'MODELO'
   },
-  colorNombre: {
-    type: DataTypes.STRING,
-    allowNull: true,
-    field: 'COLOR_NOMBRE'
-  },
-  colorHexadecimal: {
-    type: DataTypes.STRING,
-    allowNull: true,
-    field: 'COLOR_HEXADECIMAL'
-  },
-  almacenamientoMb: {
+  almacenamientoGb: {
     type: DataTypes.INTEGER,
     allowNull: true, // Opcional, por si es de categoría ACCESORIOS
-    field: 'ALMACENAMIENTO_MB'
+    field: 'ALMACENAMIENTO_GB'
   },
-  pesoG: {
+  stock: {
     type: DataTypes.INTEGER,
     allowNull: false,
     defaultValue: 0,
@@ -64,7 +54,8 @@ const PRODUCTO = sequelize.define('PRODUCTO', {
       min: 0
     },
     field: 'STOCK'
-  },  stock: {
+  },
+  pesoG: {
     type: DataTypes.INTEGER,
     allowNull: false,
     defaultValue: 0,
