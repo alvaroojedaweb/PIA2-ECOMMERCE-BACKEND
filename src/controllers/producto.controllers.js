@@ -1,8 +1,9 @@
-import { PRODUCTO } from "../models/index.model.js";
+import db from "../models/index.model.js";
+const { PRODUCTO } = db
 
 export const getAll = async (req, res) => {
   try {
-    const data = PRODUCTO.findAll()
+    const data = await PRODUCTO.findAll()
     res.json({
       estado: true,
       data,
