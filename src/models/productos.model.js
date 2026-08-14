@@ -13,13 +13,13 @@ const PRODUCTO = sequelize.define('PRODUCTO', {
     allowNull: false,
     field: 'DESCRIPCION'
   },
-  precioBase: {
+  precio: {
     type: DataTypes.FLOAT,
     allowNull: false,
     validate: {
       min: 0 // Evita precios negativos
     },
-    field: 'PRECIO_BASE'
+    field: 'PRECIO'
   },
   categoria: {
     type: DataTypes.ENUM('CELULARES', 'ACCESORIOS'),
@@ -56,7 +56,7 @@ const PRODUCTO = sequelize.define('PRODUCTO', {
     allowNull: true, // Opcional, por si es de categoría ACCESORIOS
     field: 'ALMACENAMIENTO_MB'
   },
-  stock: {
+  pesoG: {
     type: DataTypes.INTEGER,
     allowNull: false,
     defaultValue: 0,
@@ -64,6 +64,14 @@ const PRODUCTO = sequelize.define('PRODUCTO', {
       min: 0
     },
     field: 'STOCK'
+  },  stock: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    defaultValue: 0,
+    validate: {
+      min: 0
+    },
+    field: 'PESO_G' //PESO EN GRAMOS
   }
 }, {
   tableName: 'PRODUCTOS',
