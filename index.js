@@ -1,6 +1,7 @@
 import { loadEnvFile } from 'node:process';
 import express from "express";
 import sequelize from './src/config/db.config.js';
+import productoRoutes from './src/routes/productos.routes.js'
 
 
 loadEnvFile()
@@ -15,6 +16,7 @@ app.use(express.json());
 app.get("/", (req, res) => {
   res.send("¡Backend funcionando!");
 });
+app.use(productoRoutes);
 
 
 // Iniciar servidor 
@@ -30,7 +32,7 @@ async function startServer() {
 
     await sequelize.sync({ force: false }); //true solo en desarrollo
     console.log('✅ Base de datos sincronizada');
-    
+
   } catch (error) {
     console.error("❌ No se pudo conectar a la base de datos:", error);
   }
