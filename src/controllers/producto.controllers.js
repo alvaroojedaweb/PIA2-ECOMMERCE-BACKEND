@@ -23,7 +23,7 @@ export const get = async (req, res) => {
     const id = req.params.id;
 
     // findByPk busca un registro por su clave primaria.
-    const data = await Producto.findByPk(id);
+    const data = await PRODUCTO.findByPk(id);
 
     if (!data) {
       // 404 significa "no encontrado".
