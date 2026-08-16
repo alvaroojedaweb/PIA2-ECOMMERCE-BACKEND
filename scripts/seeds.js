@@ -79,6 +79,9 @@ const runSeed = async () => {
         await sequelize.authenticate();
         console.log('Conexión a la base de datos establecida.');
 
+        await sequelize.sync({ force: true }); //true solo en desarrollo
+        console.log('✅ Base de datos sincronizada');
+
         // 5. Insertamos los productos de ejemplo.
         for (const item of productosSeed) {
             const [producto, created] = await PRODUCTO.findOrCreate({
