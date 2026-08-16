@@ -2,7 +2,7 @@ import { loadEnvFile } from 'node:process';
 import express from "express";
 import sequelize from './src/config/db.config.js';
 import productoRoutes from './src/routes/productos.routes.js'
-
+//cambio de prueba
 
 loadEnvFile()
 const app = express();
