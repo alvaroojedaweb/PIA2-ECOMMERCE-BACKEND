@@ -1,5 +1,5 @@
 import db from "../src/models/index.model.js";
-const { sequelize, PRODUCTO } = db
+const { sequelize, MARCA, PRODUCTO } = db
 
 // Datos de ejemplo para la tabla productos.
 const productosSeed = [
@@ -73,6 +73,15 @@ const productosSeed = [
     }
 ];
 
+const marcasSeed = [
+    {
+        nombre: "Samsung",
+    },
+    {
+        nombre: "Xiaomi",
+    }
+];
+
 const runSeed = async () => {
     try {
         // Verificamos que podemos conectarnos a la base de datos.
@@ -82,13 +91,22 @@ const runSeed = async () => {
         await sequelize.sync({ force: true }); //true solo en desarrollo
         console.log('✅ Base de datos sincronizada');
 
-        // 5. Insertamos los productos de ejemplo.
+        // Insertamos los productos de ejemplo.
         for (const item of productosSeed) {
             const [producto, created] = await PRODUCTO.findOrCreate({
                 where: { nombre: item.nombre },
                 defaults: item,
             });
             console.log(created ? `Producto creado: ${producto.nombre}` : `Producto ya existe: ${producto.nombre}`);
+        }
+
+        // Insertamos las marcas de ejemplo.
+        for (const item of marcasSeed) {
+            const [marca, created] = await MARCA.findOrCreate({
+                where: { nombre: item.nombre },
+                defaults: item,
+            });
+            console.log(created ? `Marca creada: ${marca.nombre}` : `Marca ya existe: ${marca.nombre}`);
         }
 
         console.log('Seed completado correctamente.');
