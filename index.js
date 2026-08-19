@@ -2,6 +2,7 @@ import { loadEnvFile } from 'node:process';
 import express from "express";
 import sequelize from './src/config/db.config.js';
 import productoRoutes from './src/routes/productos.routes.js'
+import empleadoRoutes from './src/routes/empleado.routes.js';
 //cambio de prueba
 
 loadEnvFile()
@@ -17,6 +18,7 @@ app.get("/", (req, res) => {
   res.send("¡Backend funcionando!");
 });
 app.use(productoRoutes);
+app.use(empleadoRoutes);
 
 
 // Iniciar servidor 
