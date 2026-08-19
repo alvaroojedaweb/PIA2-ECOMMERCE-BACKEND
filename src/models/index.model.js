@@ -1,9 +1,11 @@
 import sequelize from '../config/db.config.js';
+import MARCA from './marcas.model.js';
 import PRODUCTO from './productos.model.js';
 
 // Objeto con todos los modelos para acceso unificado
 const db = {
   sequelize,
+  MARCA,
   PRODUCTO
 };
 
@@ -14,5 +16,5 @@ Object.keys(db).forEach((modelName) => {
   }
 });
 
-export { sequelize, PRODUCTO };
+export { sequelize, MARCA, PRODUCTO };
 export default db;
