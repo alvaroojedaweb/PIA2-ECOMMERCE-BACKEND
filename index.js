@@ -1,6 +1,7 @@
 import { loadEnvFile } from 'node:process';
 import express from "express";
 import sequelize from './src/config/db.config.js';
+import marcaRoutes from './src/routes/marcas.routes.js';
 import productoRoutes from './src/routes/productos.routes.js'
 //cambio de prueba
 
@@ -16,6 +17,7 @@ app.use(express.json());
 app.get("/", (req, res) => {
   res.send("¡Backend funcionando!");
 });
+app.use(marcaRoutes)
 app.use(productoRoutes);
 
 
