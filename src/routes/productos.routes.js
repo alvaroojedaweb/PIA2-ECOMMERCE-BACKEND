@@ -13,9 +13,9 @@ const root = "productos"
 
 productoRoutes.get(`/${root}/`, getAll);
 productoRoutes.get(`/${root}/:id`, get);
-//productoRoutes.post(`/${root}/`, create);
-//productoRoutes.put(`/${root}/:id`, update);
+productoRoutes.post(`/${root}/`, create);
+productoRoutes.put(`/${root}/:id`, update);
 //productoRoutes.delete(`/${root}/:id`, softDelete);
-//productoRoutes.delete(`/${root}/:id/hard`, hardDelete);
+productoRoutes.delete(`/${root}/:id/hard`, hardDelete);
  
 export default productoRoutes;

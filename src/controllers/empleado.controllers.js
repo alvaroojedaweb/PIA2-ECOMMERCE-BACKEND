@@ -1,119 +1,58 @@
-import db from "../models/index.model.js";
-const { EMPLEADO } = db;
+import EMPLEADO from '../models/empleados.model.js';
 
 export const getAll = async (req, res) => {
   try {
-    const data = await EMPLEADO.findAll();
-    res.json({
-      estado: true,
-      data,
-    });
+    const empleados = await EMPLEADO.findAll();
+    res.json({ estado: true, data: empleados });
   } catch (error) {
-    console.error('Error al obtener empleados:', error);
-    res.status(500).json({
-      estado: false,
-      mensaje: 'Error al obtener empleados',
-      error: error.message,
-    });
+    res.status(500).json({ estado: false, mensaje: error.message });
   }
 };
 
 export const get = async (req, res) => {
   try {
-    const id = req.params.id_empleado;
-    const data = await EMPLEADO.findByPk(id);
-
-    if (!data) {
-      return res.status(404).json({
-        estado: false,
-        mensaje: 'Empleado no encontrado',
-      });
-    }
-
-    res.json({
-      estado: true,
-      data,
-    });
+    const { id_empleado } = req.params;
+    const empleado = await EMPLEADO.findByPk(id_empleado);
+    if (!empleado) return res.status(404).json({ estado: false, mensaje: 'Empleado no encontrado' });
+    res.json({ estado: true, data: empleado });
   } catch (error) {
-    console.error('Error al obtener empleado:', error);
-    res.status(500).json({
-      estado: false,
-      mensaje: 'Error al obtener empleado',
-      error: error.message,
-    });
+    res.status(500).json({ estado: false, mensaje: error.message });
   }
 };
 
 export const create = async (req, res) => {
   try {
-    const data = await EMPLEADO.create(req.body);
-    res.status(201).json({
-      estado: true,
-      mensaje: 'Empleado creado exitosamente',
-      data,
-    });
+    const { Nombre, Email, Contraseña, Rol } = req.body;
+    const nuevoEmpleado = await EMPLEADO.create({ Nombre, Email, Contraseña, Rol });
+    res.status(201).json({ estado: true, data: nuevoEmpleado });
   } catch (error) {
-    console.error('Error al crear empleado:', error);
-    res.status(500).json({
-      estado: false,
-      mensaje: 'Error al crear empleado',
-      error: error.message,
-    });
+    res.status(500).json({ estado: false, mensaje: error.message });
   }
 };
 
 export const update = async (req, res) => {
   try {
-    const id = req.params.id_empleado;
-    const [filasAfectadas] = await EMPLEADO.update(req.body, {
-      where: { id }
-    });
+    const { id_empleado } = req.params;
+    const { Nombre, Email, Contraseña, Rol } = req.body;
+    const empleado = await EMPLEADO.findByPk(id_empleado);
+    if (!empleado) return res.status(404).json({ estado: false, mensaje: 'Empleado no encontrado' });
 
-    if (filasAfectadas === 0) {
-      return res.status(404).json({
-        estado: false,
-        mensaje: 'Empleado no encontrado para actualizar',
-      });
-    }
-
-    res.json({
-      estado: true,
-      mensaje: 'Empleado actualizado correctamente',
-    });
+    await empleado.update({ Nombre, Email, Contraseña, Rol });
+    res.json({ estado: true, data: empleado });
   } catch (error) {
-    console.error('Error al actualizar empleado:', error);
-    res.status(500).json({
-      estado: false,
-      mensaje: 'Error al actualizar empleado',
-      error: error.message,
-    });
+    res.status(500).json({ estado: false, mensaje: error.message });
   }
 };
 
 export const hardDelete = async (req, res) => {
   try {
-    const id = req.params.id_empleado;
-    const filasBorradas = await EMPLEADO.destroy({
-      where: { id }
-    });
+    const { id_empleado } = req.params;
+    const empleado = await EMPLEADO.findByPk(id_empleado);
+    if (!empleado) return res.status(404).json({ estado: false, mensaje: 'Empleado no encontrado' });
 
-    if (filasBorradas === 0) {
-      return res.status(404).json({
-        estado: false,
-        mensaje: 'Empleado no encontrado para eliminar',
-      });
-    }
-
-    res.json({
-      estado: true,
-      mensaje: 'Empleado eliminado permanentemente',
-    });
+    await empleado.destroy();
+    res.json({ estado: true, mensaje: 'Empleado eliminado permanentemente' });
   } catch (error) {
-    console.error('Error al eliminar empleado:', error);
-    res.status(500).json({
-      estado: false,
-      mensaje: 'Error al eliminar empleado',
-      error: error.message,
-    });
+    res.status(500).json({ estado: false, mensaje: error.message });
   }
 };
