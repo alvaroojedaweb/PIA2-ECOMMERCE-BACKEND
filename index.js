@@ -4,6 +4,8 @@ import sequelize from './src/config/db.config.js';
 import modeloRoutes from './src/routes/modelos.routes.js';
 import marcaRoutes from './src/routes/marcas.routes.js';
 import productoRoutes from './src/routes/productos.routes.js'
+import empleadoRoutes from './src/routes/empleado.routes.js';
+import imagenProductoRoutes from './src/routes/imagenProducto.routes.js';
 //cambio de prueba
 
 loadEnvFile()
@@ -21,6 +23,8 @@ app.get("/", (req, res) => {
 app.use(marcaRoutes)
 app.use(modeloRoutes)
 app.use(productoRoutes);
+app.use(empleadoRoutes);
+app.use(imagenProductoRoutes);
 
 
 // Iniciar servidor 
