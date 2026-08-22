@@ -14,7 +14,7 @@ const PRODUCTO = sequelize.define('PRODUCTO', {
     field: 'DESCRIPCION'
   },
   precio: {
-    type: DataTypes.FLOAT,
+    type: DataTypes.INTEGER,
     allowNull: false,
     validate: {
       min: 0 // Evita precios negativos
@@ -30,16 +30,6 @@ const PRODUCTO = sequelize.define('PRODUCTO', {
     type: DataTypes.STRING,
     allowNull: false,
     field: 'NOMBRE'
-  },
-  marca: {
-    type: DataTypes.STRING,
-    allowNull: false,
-    field: 'MARCA'
-  },
-  modelo: {
-    type: DataTypes.STRING,
-    allowNull: false,
-    field: 'MODELO'
   },
   almacenamientoGb: {
     type: DataTypes.INTEGER,
@@ -63,6 +53,11 @@ const PRODUCTO = sequelize.define('PRODUCTO', {
       min: 0
     },
     field: 'PESO_G' //PESO EN GRAMOS
+  },
+  modeloId: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    field: 'MODELOPKID'
   }
 }, {
   tableName: 'PRODUCTOS',
