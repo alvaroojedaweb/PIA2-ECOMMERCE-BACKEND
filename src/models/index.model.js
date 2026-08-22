@@ -3,14 +3,14 @@ import PRODUCTO from './productos.model.js';
 import EMPLEADO from './empleados.model.js';
 import IMAGEN_PRODUCTO from './imagenProducto.model.js';
 import ITEM_CARRITO from './itemCarrito.model.js';
-import CLIENTE from './cliente.model.js';
+//import CLIENTE from './cliente.model.js';
 
 // Relaciones
 PRODUCTO.hasMany(IMAGEN_PRODUCTO, { foreignKey: 'ProductoID', as: 'imagenes' });
 IMAGEN_PRODUCTO.belongsTo(PRODUCTO, { foreignKey: 'ProductoID', as: 'producto' });
 
-CLIENTE.hasMany(ITEM_CARRITO, { foreignKey: 'ClienteID' });
-ITEM_CARRITO.belongsTo(CLIENTE, { foreignKey: 'ClienteID' });
+//CLIENTE.hasMany(ITEM_CARRITO, { foreignKey: 'ClienteID' });
+//ITEM_CARRITO.belongsTo(CLIENTE, { foreignKey: 'ClienteID' });
 
 PRODUCTO.hasMany(ITEM_CARRITO, { foreignKey: 'ProductoID' });
 ITEM_CARRITO.belongsTo(PRODUCTO, { foreignKey: 'ProductoID' });
@@ -21,7 +21,7 @@ const db = {
   PRODUCTO,
   EMPLEADO,
   IMAGEN_PRODUCTO,
-  CLIENTE,
+  //CLIENTE,
   ITEM_CARRITO
 };
 
@@ -32,5 +32,5 @@ Object.keys(db).forEach((modelName) => {
   }
 });
 
-export { sequelize, PRODUCTO, EMPLEADO, IMAGEN_PRODUCTO, ITEM_CARRITO, CLIENTE };
+export { sequelize, PRODUCTO, EMPLEADO, IMAGEN_PRODUCTO, ITEM_CARRITO,  };
 export default db;
