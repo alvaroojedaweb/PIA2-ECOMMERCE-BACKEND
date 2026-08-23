@@ -1,4 +1,5 @@
 import EMPLEADO from '../models/empleados.model.js';
+import { encriptarPassword } from '../utils/auth.js';
 
 export const getAll = async (req, res) => {
   try {
@@ -23,9 +24,29 @@ export const get = async (req, res) => {
 export const create = async (req, res) => {
   try {
     const { Nombre, Email, Contraseña, Rol } = req.body;
-    const nuevoEmpleado = await EMPLEADO.create({ Nombre, Email, Contraseña, Rol });
+
+    // Encriptamos la contraseña antes de guardarla en la BD
+    let passwordHash = Contraseña;
+    if (Contraseña) {
+      passwordHash = await encriptarPassword(Contraseña);
+    }
+
+    const nuevoEmpleado = await EMPLEADO.create({ 
+      Nombre, 
+      Email, 
+      Contraseña: passwordHash, 
+      Rol 
+    });
+
     res.status(201).json({ estado: true, data: nuevoEmpleado });
   } catch (error) {
+    if (error.name === 'SequelizeValidationError' || error.name === 'SequelizeUniqueConstraintError') {
+      return res.status(400).json({
+        estado: false,
+        mensaje: 'Error de validación: verifique que los datos sean correctos o que el email no esté duplicado',
+        error: error.message
+      });
+    }
     res.status(500).json({ estado: false, mensaje: error.message });
   }
 };
@@ -37,7 +58,12 @@ export const update = async (req, res) => {
     const empleado = await EMPLEADO.findByPk(id_empleado);
     if (!empleado) return res.status(404).json({ estado: false, mensaje: 'Empleado no encontrado' });
 
-    await empleado.update({ Nombre, Email, Contraseña, Rol });
+    let passwordHash = Contraseña;
+    if (Contraseña) {
+      passwordHash = await encriptarPassword(Contraseña);
+    }
+
+    await empleado.update({ Nombre, Email, Contraseña: passwordHash, Rol });
     res.json({ estado: true, data: empleado });
   } catch (error) {
     res.status(500).json({ estado: false, mensaje: error.message });
