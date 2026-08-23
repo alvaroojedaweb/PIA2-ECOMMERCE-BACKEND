@@ -2,7 +2,6 @@ import { EMPLEADO } from '../models/index.model.js';
 import {
   compararPassword,
   generarToken,
-  JWT_SECRET_CLIENT,
   JWT_SECRET_ADMIN,
 } from '../utils/auth.js';
 
@@ -16,8 +15,17 @@ export const loginAdmin = async (req, res) => {
       return res.status(404).json({ estado: false, mensaje: 'Empleado no encontrado' });
     }
 
-    // Compara el Password que viene del body con empleado.Contraseña de la BD
-    const esValida = await compararPassword(Password, empleado.Contraseña);
+    // Busca la contraseña contemplando distintas opciones de nombre de columna
+    const hashPassword = empleado.Contraseña || empleado.password || empleado.Clave;
+
+    if (!hashPassword || !Password) {
+      return res.status(400).json({ 
+        estado: false, 
+        mensaje: 'La contraseña enviada o registrada no es válida' 
+      });
+    }
+
+    const esValida = await compararPassword(Password, hashPassword);
     if (!esValida) {
       return res.status(401).json({ estado: false, mensaje: 'Contraseña incorrecta' });
     }

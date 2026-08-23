@@ -27,35 +27,11 @@ export const verificarToken = (secret) => (req, res, next) => {
   }
 };
 
+// Deshabilitado temporalmente hasta tener el modelo CLIENTE en index.model.js
 export const verificarCliente = (req, res, next) => {
-  verificarToken(JWT_SECRET_CLIENT)(req, res, async (err) => {
-    if (err) return next(err);
-
-    try {
-      if (!req.user || req.user.tipo !== 'cliente') {
-        return res.status(403).json({
-          estado: false,
-          mensaje: 'Acceso solo para clientes',
-        });
-      }
-
-      const cliente = await CLIENTE.findByPk(req.user.id);
-      if (!cliente) {
-        return res.status(403).json({
-          estado: false,
-          mensaje: 'Cliente no encontrado',
-        });
-      }
-
-      req.cliente = cliente;
-      next();
-    } catch (error) {
-      return res.status(500).json({
-        estado: false,
-        mensaje: 'Error al verificar cliente',
-        error: error.message,
-      });
-    }
+  return res.status(501).json({
+    estado: false,
+    mensaje: 'Verificación de cliente en desarrollo hasta integrar el modelo CLIENTE',
   });
 };
 
