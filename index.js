@@ -8,6 +8,7 @@ import empleadoRoutes from './src/routes/empleado.routes.js';
 import imagenProductoRoutes from './src/routes/imagenProducto.routes.js';
 import itemCarritoRoutes from './src/routes/itemCarrito.routes.js';
 import authRoutes from './src/routes/auth.routes.js';
+import clienteRoutes from './src/routes/clientes.Routes.js';
 //cambio de prueba
 
 loadEnvFile()
@@ -28,7 +29,8 @@ app.use(productoRoutes);
 app.use(empleadoRoutes);
 app.use(imagenProductoRoutes);
 app.use(itemCarritoRoutes);
-app.use(authRoutes);
+app.use('/api/auth', authRoutes);
+app.use('/api/clientes', clienteRoutes);
 
 
 // Iniciar servidor 
