@@ -3,8 +3,8 @@ import jwt from 'jsonwebtoken';
 
 const SALT_ROUNDS = 10;
 
-export const JWT_SECRET_CLIENT = process.env.JWT_SECRET_CLIENT || 'secreto_ecommerce_cliente_2026';
-export const JWT_SECRET_ADMIN = process.env.JWT_SECRET_ADMIN || 'secreto_ecommerce_admin_2026';
+export const JWT_SECRET_ADMIN = process.env.JWT_SECRET_ADMIN || 'secreto_admin';
+export const JWT_SECRET_CLIENTE = process.env.JWT_SECRET_CLIENTE || 'secreto_cliente';
 
 export const encriptarPassword = async (password) => {
   return bcrypt.hash(password, SALT_ROUNDS);
