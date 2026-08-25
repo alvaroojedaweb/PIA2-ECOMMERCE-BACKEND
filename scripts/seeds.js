@@ -1,11 +1,6 @@
 import db from "../src/models/index.model.js";
-const { sequelize, MODELO, MARCA, PRODUCTO } = db
-
-// Datos de ejemplo para la tabla productos.
-const productosSeed = [
-
-];
-
+const { sequelize, MODELO, MARCA, PRODUCTO, Cliente, EMPLEADO } = db
+import { encriptarPassword } from '../src/utils/auth.js';
 
 
 async function cargarMarcas() {
@@ -119,6 +114,91 @@ async function cargarProductos() {
     }
 }
 
+async function cargarClientes() {
+    // 1. Declaras el array con las contraseñas en texto plano
+    const clientes = [
+        {
+            nombre: "Juan",
+            apellido: "Pérez",
+            email: "juan.perez@ejemplo.com",
+            telefono: "1122334455",
+            direccion: "Calle Falsa 123",
+            password: "12345678" // Texto plano
+        },
+        {
+            nombre: "María",
+            apellido: "Gómez",
+            email: "maria.gomez@ejemplo.com",
+            telefono: "1155443322",
+            direccion: "Av. Siempre Viva 742",
+            password: "123456"
+        },
+        {
+            nombre: "Carlos",
+            apellido: "López",
+            email: "carlos.lopez@ejemplo.com",
+            telefono: "3415556677",
+            direccion: "Bulevar Oroño 456",
+            password: "123456"
+        }
+    ];
+
+    for (const item of clientes) {
+        // 2. Sobreescribes la contraseña encriptándola de forma asíncrona (con await)
+        item.password = await encriptarPassword(item.password);
+
+        // 3. Guardas en la base de datos
+        const [cliente, creado] = await Cliente.findOrCreate({
+            where: { email: item.email },
+            defaults: item
+        });
+
+        if (creado) {
+            console.log(`Cliente creado: ${cliente.nombre} ${cliente.apellido}`);
+        } else {
+            console.log(`El cliente con email ${cliente.email} ya existía.`);
+        }
+    }
+}
+
+async function cargarEmpleados() {
+    const empleados = [
+        {
+            Nombre: "Juan",
+            Email: "admin@celulartech.com",
+            Contraseña: "12345678",
+            Rol: "Admin"
+        },
+        {
+            Nombre: "María",
+            Email: "staff1@celulartech.com",
+            Contraseña: "123456",
+            Rol: "Staff"
+        },
+        {
+            Nombre: "Carlos",
+            Email: "staff2@celulartech.com",
+            Contraseña: "123456",
+            Rol: "Staff"
+        }
+    ];
+
+    for (const item of empleados) {
+        item.Contraseña = await encriptarPassword(item.Contraseña);
+
+        const [empleado, creado] = await EMPLEADO.findOrCreate({
+            where: { Email: item.Email },
+            defaults: item
+        });
+
+        if (creado) {
+            console.log(`Empleado creado: ${empleado.Nombre} (${empleado.Rol})`);
+        } else {
+            console.log(`El empleado con email ${empleado.Email} ya existía.`);
+        }
+    }
+}
+
 const runSeed = async () => {
     try {
         // Verificamos que podemos conectarnos a la base de datos.
@@ -131,6 +211,8 @@ const runSeed = async () => {
         await cargarMarcas()
         await cargarModelos()
         await cargarProductos()
+        await cargarClientes()
+        await cargarEmpleados()
 
         console.log('Seed completado correctamente.');
     } catch (error) {
