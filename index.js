@@ -1,4 +1,5 @@
 import { loadEnvFile } from 'node:process';
+import cors from "cors"
 import express from "express";
 import sequelize from './src/config/db.config.js';
 import modeloRoutes from './src/routes/modelos.routes.js';
@@ -17,6 +18,11 @@ const PORT = process.env.APP_PORT || 3000;
 
 // Middleware básico para parsear JSON
 app.use(express.json());
+
+app.use(cors({
+  origin: 'http://localhost:5173', // Permite solo a tu frontend local
+  credentials: true
+}));
 
 
 // Rutas
