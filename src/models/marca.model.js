@@ -12,10 +12,10 @@ const MARCA = sequelize.define('MARCA', {
         type: DataTypes.STRING,
         allowNull: false,
         field: 'NOMBRE'
-    },
+    }
 
 }, {
-    tableName: 'MARCAS',
+    tableName: 'MARCA',
     timestamps: true
 });
 

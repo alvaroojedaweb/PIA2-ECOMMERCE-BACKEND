@@ -1,28 +1,35 @@
 import { DataTypes } from 'sequelize';
 import sequelize from '../config/db.config.js';
 
-const IMAGEN_PRODUCTO = sequelize.define('ImagenProducto', {
-  ID: {
+const IMAGEN_PRODUCTO = sequelize.define('IMAGEN_PRODUCTO', {
+  id: {
     type: DataTypes.INTEGER,
     primaryKey: true,
-    autoIncrement: true
+    autoIncrement: true,
+    field: 'IMAGENPRODUCTOPKID' 
   },
-  ProductoID: {
+  
+  productoId: {
     type: DataTypes.INTEGER,
-    allowNull: false
+    allowNull: false,
+    field: 'PRODUCTOPKID' 
   },
-  ImagenURL: {
+  
+  imagenUrl: {
     type: DataTypes.STRING(255),
-    allowNull: false
+    allowNull: false,
+    field: 'IMAGENURL' 
   },
-  Orden: {
+  
+  orden: {
     type: DataTypes.INTEGER,
     allowNull: true,
-    defaultValue: 1
+    defaultValue: 1,
+    field: 'ORDEN'  
   }
 }, {
-  tableName: 'ImagenProducto',
-  timestamps: false
+  tableName: 'IMAGEN_PRODUCTO',
+  timestamps: true
 });
 
 export default IMAGEN_PRODUCTO;

@@ -1,53 +1,72 @@
 import sequelize from '../config/db.config.js';
-import MODELO from './modelos.model.js';
-import MARCA from './marcas.model.js';
-import PRODUCTO from './productos.model.js';
-import EMPLEADO from './empleados.model.js';
+import CLIENTE from './cliente.model.js'; 
+import EMPLEADO from './empleado.model.js';
+import MARCA from './marca.model.js'; 
+import MODELO from './modelo.model.js';
+import PRODUCTO from './producto.model.js';
 import IMAGEN_PRODUCTO from './imagenProducto.model.js';
-import ITEM_CARRITO from './itemCarrito.model.js';
-import Cliente from './clientes.model.js';
+import ITEM_CARRITO from './itemCarrito.model.js'; 
+import ORDEN_COMPRA from './ordenCompra.model.js';
+import ITEM_ORDEN_COMPRA from './itemOrdenCompra.model.js';
 
+// Relaciones Marca - Modelo
+MARCA.hasMany(MODELO, { foreignKey: 'marcaId' });
+MODELO.belongsTo(MARCA, { foreignKey: 'marcaId' });
 
-// Relaciones
-MARCA.hasMany(MODELO, { foreignKey: "marcaId" })
-MODELO.belongsTo(MARCA, { foreignKey: "marcaId" })
-MODELO.hasMany(PRODUCTO, { foreignKey: "modeloId" })
-PRODUCTO.belongsTo(MODELO, { foreignKey: "modeloId" })
-PRODUCTO.hasMany(IMAGEN_PRODUCTO, { foreignKey: 'ProductoID', as: 'imagenes' });
-IMAGEN_PRODUCTO.belongsTo(PRODUCTO, { foreignKey: 'ProductoID', as: 'producto' });
+// Relaciones Modelo - Producto
+MODELO.hasMany(PRODUCTO, { foreignKey: 'modeloId' });
+PRODUCTO.belongsTo(MODELO, { foreignKey: 'modeloId' });
 
+// Relaciones Producto - ImagenProducto
+PRODUCTO.hasMany(IMAGEN_PRODUCTO, { foreignKey: 'productoId', as: 'imagenes' });
+IMAGEN_PRODUCTO.belongsTo(PRODUCTO, { foreignKey: 'productoId', as: 'producto' });
 
-//CLIENTE.hasMany(ITEM_CARRITO, { foreignKey: 'ClienteID' });
-//ITEM_CARRITO.belongsTo(CLIENTE, { foreignKey: 'ClienteID' });
+// Relaciones Cliente - ItemCarrito
+CLIENTE.hasMany(ITEM_CARRITO, { foreignKey: 'clienteId' });
+ITEM_CARRITO.belongsTo(CLIENTE, { foreignKey: 'clienteId' });
 
+// Relaciones Producto - ItemCarrito
+PRODUCTO.hasMany(ITEM_CARRITO, { foreignKey: 'productoId' });
+ITEM_CARRITO.belongsTo(PRODUCTO, { foreignKey: 'productoId' });
 
-//CLIENTE.hasMany(ITEM_CARRITO, { foreignKey: 'ClienteID' });
-//ITEM_CARRITO.belongsTo(CLIENTE, { foreignKey: 'ClienteID' });
+// Relaciones Cliente / Empleado - OrdenCompra
+CLIENTE.hasMany(ORDEN_COMPRA, { foreignKey: 'clienteId' });
+ORDEN_COMPRA.belongsTo(CLIENTE, { foreignKey: 'clienteId' });
 
-//PRODUCTO.hasMany(ITEM_CARRITO, { foreignKey: 'ProductoID' });
-//ITEM_CARRITO.belongsTo(PRODUCTO, { foreignKey: 'ProductoID' });
+EMPLEADO.hasMany(ORDEN_COMPRA, { foreignKey: 'empleadoId' });
+ORDEN_COMPRA.belongsTo(EMPLEADO, { foreignKey: 'empleadoId' });
+
+// Relaciones OrdenCompra - ItemOrdenCompra - Producto
+ORDEN_COMPRA.hasMany(ITEM_ORDEN_COMPRA, { foreignKey: 'ordenCompraId' });
+ITEM_ORDEN_COMPRA.belongsTo(ORDEN_COMPRA, { foreignKey: 'ordenCompraId' });
+
+PRODUCTO.hasMany(ITEM_ORDEN_COMPRA, { foreignKey: 'productoId' });
+ITEM_ORDEN_COMPRA.belongsTo(PRODUCTO, { foreignKey: 'productoId' });
 
 // Objeto con todos los modelos para acceso unificado
 const db = {
   sequelize,
-  MODELO,
-  MARCA,
-  PRODUCTO,
+  CLIENTE,
   EMPLEADO,
+  MARCA,
+  MODELO,
+  PRODUCTO,
   IMAGEN_PRODUCTO,
-  Cliente,
-  ITEM_CARRITO
+  ITEM_CARRITO,
+  ORDEN_COMPRA,
+  ITEM_ORDEN_COMPRA
 };
 
-// Configurar asociaciones (relaciones) si existen en el futuro
-Object.keys(db).forEach((modelName) => {
-  if (db[modelName].associate) {
-    db[modelName].associate(db);
-  }
-});
+export { 
+  sequelize,
+  CLIENTE,
+  EMPLEADO,
+  MARCA,
+  MODELO,
+  PRODUCTO,
+  IMAGEN_PRODUCTO,
+  ITEM_CARRITO,
+  ORDEN_COMPRA,
+  ITEM_ORDEN_COMPRA };
 
-
-
-// Configurar asociaciones
-export { sequelize, MODELO, MARCA, PRODUCTO, EMPLEADO, IMAGEN_PRODUCTO, ITEM_CARRITO };
 export default db;

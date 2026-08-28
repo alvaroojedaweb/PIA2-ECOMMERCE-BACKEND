@@ -3,7 +3,7 @@ import sequelize from '../config/db.config.js';
 
 const MODELO = sequelize.define('MODELO', {
     id: {
-        type: DataTypes.INTEGER,
+    type: DataTypes.INTEGER,
         autoIncrement: true,
         primaryKey: true,
         field: 'MODELOPKID'
@@ -20,7 +20,8 @@ const MODELO = sequelize.define('MODELO', {
     }
 
 }, {
-    tableName: 'MODELOS',
+    tableName: 'MODELO',
     timestamps: true
 });
+
 export default MODELO;

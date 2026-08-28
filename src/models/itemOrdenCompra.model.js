@@ -1,56 +1,52 @@
 
-import { DataTypes } from'sequelize';
-import sequelize from'../config/db.config.js';
- import OrdenCompra from'./ordenCompra.model.js';
-import Producto from'./productos.model.js';
+import { DataTypes } from 'sequelize';
+import sequelize from '../config/db.config.js';
 
-const ItemOrdenCompra = sequelize.define('ItemOrdenCompra', {
+const ITEM_ORDEN_COMPRA = sequelize.define('ITEM_ORDEN_COMPRA', {
+  
   id: {
     type: DataTypes.INTEGER,
     primaryKey: true,
-    autoIncrement: true
+    autoIncrement: true,
+    field: 'ITEMORDENCOMPRAPKID'
   },
-  orden_compra_id: {
+  
+  ordenCompraId: {
     type: DataTypes.INTEGER,
     allowNull: false,
-    references: {
-      model: 'orden_compra',
-      key: 'orden_compra_id'
-    }
+    field: 'ORDENCOMPRAPKID' 
   },
-  producto_id: {
+  
+  productoId: {
     type: DataTypes.INTEGER,
     allowNull: false,
-    references: {
-      model: 'PRODUCTOS',
-      key: 'PRODUCTOPKID'
-    }
+    field: 'PRODUCTOPKID'
   },
+  
   cantidad: {
     type: DataTypes.INTEGER,
     allowNull: false,
     defaultValue: 1,
     validate: {
       min: 1
-    }
+    },
+    field: 'CANTIDAD' 
   },
-  precio_unitario: {
+ 
+  precioUnitario: {
     type: DataTypes.DECIMAL(10, 2),
-    allowNull: false
+    allowNull: false,
+    field: 'PRECIOUNITARIO'
   },
+  
   subtotal: {
     type: DataTypes.DECIMAL(10, 2),
-    allowNull: false
+    allowNull: false,
+    field: 'SUBTOTAL'
   }
 }, {
-  tableName: 'item_orden_compra',
+  tableName: 'ITEM_ORDEN_COMPRA',
   timestamps: true
 });
 
-// Relaciones
-ItemOrdenCompra.belongsTo(OrdenCompra, { foreignKey: 'orden_compra_id' });
-OrdenCompra.hasMany(ItemOrdenCompra, { foreignKey: 'orden_compra_id' });
-ItemOrdenCompra.belongsTo(Producto, { foreignKey: 'producto_id' });
-Producto.hasMany(ItemOrdenCompra, { foreignKey: 'producto_id' });
-
-export default ItemOrdenCompra;
+export default ITEM_ORDEN_COMPRA;
