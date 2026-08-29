@@ -66,7 +66,7 @@ export const get = async (req, res) => {
     });
 
     if (!p) {
-      // 404 significa "no encontrado".
+      
       return res.status(404).json({
         estado: false,
         mensaje: 'Producto no encontrado',
@@ -124,7 +124,7 @@ export const update = async (req, res) => {
     const p = await PRODUCTO.findByPk(id);
 
     if (!p) {
-      // 404 significa "no encontrado".
+      
       return res.status(404).json({
         estado: false,
         mensaje: 'Producto no encontrado',
@@ -147,8 +147,6 @@ export const update = async (req, res) => {
         }
       ]
     });
-
-
 
     const data = {
       id: pActualizado.id,

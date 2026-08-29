@@ -9,10 +9,10 @@ import {
 
 const router = Router();
 
-router.get('/productos/:id_producto/imagenes', getAllByProducto);
-router.get('/productos/:id_producto/imagenes/:id_imagen', getById);
-router.post('/productos/:id_producto/imagenes', create);
-router.put('/productos/:id_producto/imagenes/:id_imagen', update);
-router.delete('/productos/:id_producto/imagenes/:id_imagen/hard', hardDelete);
+router.get('/producto/:id_producto', getAllByProducto);
+router.get('/:id_imagen', getById);
+router.post('/', create);
+router.put('/:id_imagen', update);
+router.delete('/:id_imagen/hard', hardDelete);
 
 export default router;

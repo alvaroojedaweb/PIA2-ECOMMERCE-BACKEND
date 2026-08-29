@@ -1,12 +1,10 @@
 import { Router } from 'express';
-import { loginCliente, loginAdmin } from '../controllers/authController.js';
+import { loginAdmin, loginCliente } from '../controllers/authController.js';
 
 const router = Router();
 
-// POST /auth/cliente/login -> Login para clientes
-router.post('/cliente/login', loginCliente);
+router.post('/login-cliente', loginCliente);
 
-// POST /auth/admin/login -> Login para empleados / admins
-router.post('/admin/login', loginAdmin);
+router.post('/login-admin', loginAdmin);
 
 export default router;

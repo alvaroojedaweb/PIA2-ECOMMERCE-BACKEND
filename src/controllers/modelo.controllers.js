@@ -30,7 +30,7 @@ export const get = async (req, res) => {
         );
 
         if (!data) {
-            // 404 significa "no encontrado".
+           
             return res.status(404).json({
                 estado: false,
                 mensaje: 'MODELO no encontrado',

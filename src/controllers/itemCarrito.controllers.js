@@ -1,11 +1,10 @@
 import ITEM_CARRITO from '../models/itemCarrito.model.js';
 
-// GET /clientes/:id_cliente/carrito
 export const obtenerCarritoCliente = async (req, res) => {
   try {
     const { id_cliente } = req.params;
     const items = await ITEM_CARRITO.findAll({
-      where: { ClienteID: id_cliente }
+      where: { clienteId: id_cliente }
     });
     res.status(200).json(items);
   } catch (error) {
@@ -13,13 +12,10 @@ export const obtenerCarritoCliente = async (req, res) => {
   }
 };
 
-// GET /clientes/:id_cliente/carrito/:id_item
 export const obtenerItemCarrito = async (req, res) => {
   try {
-    const { id_cliente, id_item } = req.params;
-    const item = await ITEM_CARRITO.findOne({
-      where: { ID: id_item, ClienteID: id_cliente }
-    });
+    const { id_item } = req.params;
+    const item = await ITEM_CARRITO.findByPk(id_item);
 
     if (!item) {
       return res.status(404).json({ estado: false, mensaje: 'Item no encontrado en el carrito' });
@@ -31,17 +27,16 @@ export const obtenerItemCarrito = async (req, res) => {
   }
 };
 
-// POST /clientes/:id_cliente/carrito
 export const agregarAlCarrito = async (req, res) => {
   try {
     const { id_cliente } = req.params;
-    const { ProductoID, Cantidad, Precio } = req.body;
+    const { productoId, cantidad, precio } = req.body;
 
     const nuevoItem = await ITEM_CARRITO.create({
-      ClienteID: id_cliente,
-      ProductoID,
-      Cantidad: Cantidad || 1,
-      Precio
+      clienteId: id_cliente,
+      productoId,
+      cantidad: cantidad || 1,
+      precio
     });
 
     res.status(201).json({
@@ -54,21 +49,19 @@ export const agregarAlCarrito = async (req, res) => {
   }
 };
 
-// PUT /clientes/:id_cliente/carrito/:id_item
+// PUT /carrito/:id_item
 export const actualizarItemCarrito = async (req, res) => {
   try {
-    const { id_cliente, id_item } = req.params;
-    const { Cantidad, Precio } = req.body;
+    const { id_item } = req.params;
+    const { cantidad, precio } = req.body;
 
-    const item = await ITEM_CARRITO.findOne({
-      where: { ID: id_item, ClienteID: id_cliente }
-    });
+    const item = await ITEM_CARRITO.findByPk(id_item);
 
     if (!item) {
       return res.status(404).json({ estado: false, mensaje: 'Item no encontrado' });
     }
 
-    await item.update({ Cantidad, Precio });
+    await item.update({ cantidad, precio });
 
     res.status(200).json({
       estado: true,
@@ -80,14 +73,11 @@ export const actualizarItemCarrito = async (req, res) => {
   }
 };
 
-// DELETE /clientes/:id_cliente/carrito/:id_item/hard
 export const eliminarItemCarrito = async (req, res) => {
   try {
-    const { id_cliente, id_item } = req.params;
+    const { id_item } = req.params;
 
-    const item = await ITEM_CARRITO.findOne({
-      where: { ID: id_item, ClienteID: id_cliente }
-    });
+    const item = await ITEM_CARRITO.findByPk(id_item);
 
     if (!item) {
       return res.status(404).json({ estado: false, mensaje: 'Item no encontrado' });
