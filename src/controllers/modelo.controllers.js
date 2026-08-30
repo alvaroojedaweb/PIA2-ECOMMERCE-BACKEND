@@ -3,7 +3,9 @@ const { MODELO } = db
 
 export const getAll = async (req, res) => {
     try {
-        const { id_marca } = req.params;
+        const id_marca = req.params.id_marca || req.body.marcaId || req.body.id_marca;
+        const { nombre } = req.body;
+        
         const data = await MODELO.findAll(
             { where: { marcaId: id_marca } }
         )
@@ -53,16 +55,24 @@ export const get = async (req, res) => {
 
 export const create = async (req, res) => {
     try {
-        const { id_marca } = req.params
-        const { nombre } = req.body
+        const nombre = req.body?.nombre;
+        const marcaId = req.params?.id_marca || req.body?.marcaId || req.body?.marca_id || req.body?.MARCAPKID;
+
+        if (!nombre || !marcaId) {
+            return res.status(400).json({
+                estado: false,
+                mensaje: "El campo 'nombre' y el ID de la marca son obligatorios."
+            });
+        }
+
         const data = await MODELO.create({
             nombre,
-            marcaId: id_marca
+            marcaId: Number(marcaId)
         });
 
         res.status(201).json({
             estado: true,
-            data,
+            data
         });
     } catch (error) {
         console.error('Error al crear MODELO:', error);

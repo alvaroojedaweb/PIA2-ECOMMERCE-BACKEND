@@ -37,7 +37,7 @@ export const create = async (req, res) => {
     const nuevoEmpleado = await EMPLEADO.create({
       nombre,
       email,
-      password: passwordHash,
+      contraseña: passwordHash, // Se cambia 'password' por 'contraseña'
       rol,
     });
 

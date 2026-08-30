@@ -1,10 +1,10 @@
 import db from '../models/index.model.js';
 const { EMPLEADO, CLIENTE } = db;
-import {compararPassword,
+import {
+  compararPassword,
   generarToken,
   JWT_SECRET_ADMIN,
   JWT_SECRET_CLIENTE,
-  
 } from '../utils/auth.js';
 
 // Login de Empleados / Admin
@@ -17,14 +17,17 @@ export const loginAdmin = async (req, res) => {
       return res.status(404).json({ estado: false, mensaje: 'Empleado no encontrado' });
     }
 
-    if (!empleado.password || !password) {
+    // Se busca la propiedad 'contraseña' o 'password' según el modelo
+    const hashRegistrado = empleado.contraseña || empleado.password;
+
+    if (!hashRegistrado || !password) {
       return res.status(400).json({ 
         estado: false, 
         mensaje: 'La contraseña enviada o registrada no es válida' 
       });
     }
 
-    const esValida = await compararPassword(password, empleado.password);
+    const esValida = await compararPassword(password, hashRegistrado);
     if (!esValida) {
       return res.status(401).json({ estado: false, mensaje: 'Contraseña incorrecta' });
     }
@@ -50,7 +53,6 @@ export const loginAdmin = async (req, res) => {
   }
 };
 
-
 export const loginCliente = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -71,8 +73,9 @@ export const loginCliente = async (req, res) => {
       });
     }
 
-    
-    const esValida = await compararPassword(password, cliente.password);
+    const hashRegistrado = cliente.contraseña || cliente.password;
+
+    const esValida = await compararPassword(password, hashRegistrado);
     if (!esValida) {
       return res.status(401).json({
         estado: false,

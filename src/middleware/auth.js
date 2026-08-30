@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-import { JWT_SECRET_CLIENT, JWT_SECRET_ADMIN } from '../utils/auth.js';
+import { JWT_SECRET_CLIENTE, JWT_SECRET_ADMIN } from '../utils/auth.js';
 import { EMPLEADO } from '../models/index.model.js';
 
 export const verificarToken = (secret) => (req, res, next) => {

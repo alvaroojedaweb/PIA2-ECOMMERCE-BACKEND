@@ -7,14 +7,17 @@ import {
   softDelete,
   hardDelete
 } from '../controllers/producto.controllers.js';
+import { verificarAdmin } from '../middleware/auth.js';
 
 const productoRoutes = Router();
 
+// Rutas públicas (cualquiera o cliente puede ver los productos)
 productoRoutes.get('/', getAll);
 productoRoutes.get('/:id', get);
-productoRoutes.post('/', create);
-productoRoutes.put('/:id', update);
-// productoRoutes.delete('/:id', softDelete);
-productoRoutes.delete('/:id/hard', hardDelete);
+
+// Rutas protegidas solo para administradores
+productoRoutes.post('/', verificarAdmin, create);
+productoRoutes.put('/:id', verificarAdmin, update);
+productoRoutes.delete('/:id/hard', verificarAdmin, hardDelete);
  
 export default productoRoutes;
