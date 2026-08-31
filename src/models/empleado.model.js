@@ -2,35 +2,43 @@ import { DataTypes } from 'sequelize';
 import sequelize from '../config/db.config.js';
 
 const EMPLEADO = sequelize.define('EMPLEADO', {
-  ID: {
+  id: {
     type: DataTypes.INTEGER,
     autoIncrement: true,
-    primaryKey: true
+    primaryKey: true,
+    field: 'EMPLEADOPKID'
     
   },
-  Nombre: {
+
+  nombre: {
     type: DataTypes.STRING,
     allowNull: false,
+    field: 'NOMBRE' 
     
   },
   
-  Email: {
+  email: {
     type: DataTypes.STRING,
     allowNull: false,
     unique: true,
-    
+    field: 'EMAIL'  
   },
-  Contraseña: {
+
+  contraseña: {
     type: DataTypes.STRING,
-    allowNull: false
+    allowNull: false,
+    field: 'PASSWORD'
   },
-  Rol: {
+  
+  rol: {
     type: DataTypes.ENUM('Staff', 'Admin'),
     allowNull: false,
-    defaultValue: 'Staff'
+    defaultValue: 'Staff',
+    field: 'ROL'
   }
 }, {
-  tableName: 'Empleado',
-  timestamps: false
+  tableName: 'EMPLEADO',
+  timestamps: true
 });
+
 export default EMPLEADO;

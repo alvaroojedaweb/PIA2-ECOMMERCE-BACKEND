@@ -7,13 +7,13 @@ import {
   hardDelete
 } from '../controllers/empleado.controllers.js';
 
-const empleadoRoutes = Router();
-const root = "empleados";
+const router = Router();
 
-empleadoRoutes.get(`/${root}`, getAll);
-empleadoRoutes.get(`/${root}/:id_empleado`, get);
-empleadoRoutes.post(`/${root}`, create);
-empleadoRoutes.put(`/${root}/:id_empleado`, update);
-empleadoRoutes.delete(`/${root}/:id_empleado/hard`, hardDelete);
 
-export default empleadoRoutes;
+router.get('/', getAll);
+router.get('/:id_empleado', get);
+router.post('/', create);
+router.put('/:id_empleado', update);
+router.delete('/:id_empleado', hardDelete);
+
+export default router;

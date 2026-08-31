@@ -1,11 +1,11 @@
-// clientes.Controllers.js contiene la lógica de negocio para los clientes.
-import Cliente from '../models/clientes.model.js';
+import db from '../models/index.model.js';
+const { CLIENTE } = db;
 import { encriptarPassword } from '../utils/auth.js';
 
-// GET /clientes -> devuelve todos los clientes.
+
 export const obtener = async (req, res) => {
     try {
-        const data = await Cliente.findAll();
+        const data = await CLIENTE.findAll();
         res.json({
             estado: true,
             data,
@@ -20,11 +20,10 @@ export const obtener = async (req, res) => {
     }
 };
 
-// GET /clientes/:id -> devuelve un cliente por su id.
 export const obtenerPorId = async (req, res) => {
     try {
         const id = parseInt(req.params.id, 10);
-        const data = await Cliente.findByPk(id);
+        const data = await CLIENTE.findByPk(id);
 
         if (!data) {
             return res.status(404).json({
@@ -47,7 +46,6 @@ export const obtenerPorId = async (req, res) => {
     }
 };
 
-// POST /clientes -> crea un nuevo cliente encriptando la contraseña.
 export const crear = async (req, res) => {
     try {
         const { nombre, apellido, email, telefono, direccion, password } = req.body;
@@ -59,10 +57,9 @@ export const crear = async (req, res) => {
             });
         }
 
-        // Encriptamos la contraseña con la función helper
         const passwordHash = await encriptarPassword(password);
 
-        const nuevoCliente = await Cliente.create({
+        const nuevoCliente = await CLIENTE.create({
             nombre,
             apellido,
             email,
@@ -71,7 +68,6 @@ export const crear = async (req, res) => {
             password: passwordHash
         });
 
-        // Ocultamos la contraseña en la respuesta JSON
         const clienteResponse = nuevoCliente.toJSON();
         delete clienteResponse.password;
 
@@ -95,12 +91,11 @@ export const crear = async (req, res) => {
     }
 };
 
-// PUT /clientes/:id -> actualiza un cliente existente.
 export const actualizar = async (req, res) => {
     try {
         const id = parseInt(req.params.id, 10);
         const { nombre, apellido, email, telefono, direccion, password } = req.body;
-        const cliente = await Cliente.findByPk(id);
+        const cliente = await CLIENTE.findByPk(id);
 
         if (!cliente) {
             return res.status(404).json({ 
@@ -139,11 +134,10 @@ export const actualizar = async (req, res) => {
     }
 };
 
-// DELETE /clientes/:id -> elimina un cliente.
 export const eliminar = async (req, res) => {
     try {
         const id = parseInt(req.params.id, 10);
-        const cliente = await Cliente.findByPk(id);
+        const cliente = await CLIENTE.findByPk(id);
 
         if (!cliente) {
             return res.status(404).json({

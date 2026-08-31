@@ -1,42 +1,29 @@
 import { loadEnvFile } from 'node:process';
-import cors from "cors"
-import express from "express";
+import cors from 'cors'
+import express from 'express';
 import sequelize from './src/config/db.config.js';
-import modeloRoutes from './src/routes/modelos.routes.js';
-import marcaRoutes from './src/routes/marcas.routes.js';
-import productoRoutes from './src/routes/productos.routes.js'
-import empleadoRoutes from './src/routes/empleado.routes.js';
-import imagenProductoRoutes from './src/routes/imagenProducto.routes.js';
-import itemCarritoRoutes from './src/routes/itemCarrito.routes.js';
-import authRoutes from './src/routes/auth.routes.js';
-import clienteRoutes from './src/routes/clientes.Routes.js';
-//cambio de prueba
+import routes from './src/routes/index.routes.js';
 
 loadEnvFile()
+
 const app = express();
 const PORT = process.env.APP_PORT || 3000;
 
-// Middleware básico para parsear JSON
+// Middleware 
 app.use(express.json());
-
 app.use(cors({
-  origin: 'http://localhost:5173', // Permite solo a tu frontend local
+  origin: 'http://localhost:5173', 
   credentials: true
 }));
 
 
-// Rutas
-app.get("/", (req, res) => {
-  res.send("¡Backend funcionando!");
+// Ruta base de prueba
+app.get('/', (req, res) => {
+  res.send('Backend funcionando!');
 });
-app.use(marcaRoutes)
-app.use(modeloRoutes)
-app.use(productoRoutes);
-app.use(empleadoRoutes);
-app.use(imagenProductoRoutes);
-app.use(itemCarritoRoutes);
-app.use('/api/auth', authRoutes);
-app.use('/api/clientes', clienteRoutes);
+
+// Enrutador principal centralizado
+app.use('/api', routes);
 
 
 // Iniciar servidor 
@@ -50,7 +37,7 @@ async function startServer() {
     await sequelize.authenticate();
     console.log('✅ Conexión a la base de datos establecida correctamente.');
 
-    await sequelize.sync({ force: false }); //true solo en desarrollo
+    await sequelize.sync({ force: false });
     console.log('✅ Base de datos sincronizada');
 
   } catch (error) {

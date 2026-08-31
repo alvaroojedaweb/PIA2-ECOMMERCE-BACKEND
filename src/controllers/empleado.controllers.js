@@ -1,5 +1,6 @@
-import EMPLEADO from '../models/empleados.model.js';
-import { encriptarPassword } from '../utils/auth.js';
+import db from "../models/index.model.js";
+const { EMPLEADO } = db;
+import { encriptarPassword } from "../utils/auth.js";
 
 export const getAll = async (req, res) => {
   try {
@@ -14,7 +15,10 @@ export const get = async (req, res) => {
   try {
     const { id_empleado } = req.params;
     const empleado = await EMPLEADO.findByPk(id_empleado);
-    if (!empleado) return res.status(404).json({ estado: false, mensaje: 'Empleado no encontrado' });
+    if (!empleado)
+      return res
+        .status(404)
+        .json({ estado: false, mensaje: "Empleado no encontrado" });
     res.json({ estado: true, data: empleado });
   } catch (error) {
     res.status(500).json({ estado: false, mensaje: error.message });
@@ -23,28 +27,31 @@ export const get = async (req, res) => {
 
 export const create = async (req, res) => {
   try {
-    const { Nombre, Email, Contraseña, Rol } = req.body;
+    const { nombre, email, password, rol } = req.body;
 
-    // Encriptamos la contraseña antes de guardarla en la BD
-    let passwordHash = Contraseña;
-    if (Contraseña) {
-      passwordHash = await encriptarPassword(Contraseña);
+    let passwordHash = password;
+    if (password) {
+      passwordHash = await encriptarPassword(password);
     }
 
-    const nuevoEmpleado = await EMPLEADO.create({ 
-      Nombre, 
-      Email, 
-      Contraseña: passwordHash, 
-      Rol 
+    const nuevoEmpleado = await EMPLEADO.create({
+      nombre,
+      email,
+      contraseña: passwordHash, // Se cambia 'password' por 'contraseña'
+      rol,
     });
 
     res.status(201).json({ estado: true, data: nuevoEmpleado });
   } catch (error) {
-    if (error.name === 'SequelizeValidationError' || error.name === 'SequelizeUniqueConstraintError') {
+    if (
+      error.name === "SequelizeValidationError" ||
+      error.name === "SequelizeUniqueConstraintError"
+    ) {
       return res.status(400).json({
         estado: false,
-        mensaje: 'Error de validación: verifique que los datos sean correctos o que el email no esté duplicado',
-        error: error.message
+        mensaje:
+          "Error de validación: verifique que los datos sean correctos o que el email no esté duplicado",
+        error: error.message,
       });
     }
     res.status(500).json({ estado: false, mensaje: error.message });
@@ -54,16 +61,20 @@ export const create = async (req, res) => {
 export const update = async (req, res) => {
   try {
     const { id_empleado } = req.params;
-    const { Nombre, Email, Contraseña, Rol } = req.body;
+    
+    const { nombre, email, password, rol } = req.body;
     const empleado = await EMPLEADO.findByPk(id_empleado);
-    if (!empleado) return res.status(404).json({ estado: false, mensaje: 'Empleado no encontrado' });
+    if (!empleado)
+      return res
+        .status(404)
+        .json({ estado: false, mensaje: "Empleado no encontrado" });
 
-    let passwordHash = Contraseña;
-    if (Contraseña) {
-      passwordHash = await encriptarPassword(Contraseña);
+    let passwordHash = empleado.password;
+    if (password) {
+      passwordHash = await encriptarPassword(password);
     }
 
-    await empleado.update({ Nombre, Email, Contraseña: passwordHash, Rol });
+    await empleado.update({ nombre, email, password: passwordHash, rol });
     res.json({ estado: true, data: empleado });
   } catch (error) {
     res.status(500).json({ estado: false, mensaje: error.message });
@@ -74,10 +85,13 @@ export const hardDelete = async (req, res) => {
   try {
     const { id_empleado } = req.params;
     const empleado = await EMPLEADO.findByPk(id_empleado);
-    if (!empleado) return res.status(404).json({ estado: false, mensaje: 'Empleado no encontrado' });
+    if (!empleado)
+      return res
+        .status(404)
+        .json({ estado: false, mensaje: "Empleado no encontrado" });
 
     await empleado.destroy();
-    res.json({ estado: true, mensaje: 'Empleado eliminado permanentemente' });
+    res.json({ estado: true, mensaje: "Empleado eliminado permanentemente" });
   } catch (error) {
     res.status(500).json({ estado: false, mensaje: error.message });
   }

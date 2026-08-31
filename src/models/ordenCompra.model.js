@@ -1,33 +1,32 @@
 import { DataTypes } from 'sequelize';
 import sequelize from '../config/db.config.js';
-import Cliente from './clientes.model.js';
 
-const OrdenCompra = sequelize.define('OrdenCompra', {
+const ORDEN_COMPRA = sequelize.define('ORDEN_COMPRA', {
 
-  orden_compra_id: {
+  id: {
     type: DataTypes.INTEGER,
     primaryKey: true,
-    autoIncrement: true
+    autoIncrement: true,
+    field: 'ORDENCOMPRAPKID' 
   },
 
-  cliente_id: {
+  clienteId: {
     type: DataTypes.INTEGER,
     allowNull: false,
-
-    references: {
-      model: 'clientes',
-      key: 'id'
-    }
+    field: 'CLIENTEPKID' 
   },
 
-  empleado_id: {
+    
+  empleadoId: {
     type: DataTypes.INTEGER,
-    allowNull: true
+    allowNull: true,
+    field: 'EMPLEADOPKID'
   },
 
   fecha: {
     type: DataTypes.DATE,
-    defaultValue: DataTypes.NOW
+    defaultValue: DataTypes.NOW,
+    field: 'FECHA'
   },
 
   estado: {
@@ -38,36 +37,29 @@ const OrdenCompra = sequelize.define('OrdenCompra', {
       'entregada',
       'cancelada'
     ),
-    defaultValue: 'pendiente'
+    defaultValue: 'pendiente',
+    field: 'ESTADO'
   },
 
   total: {
     type: DataTypes.DECIMAL(10, 2),
-    defaultValue: 0.00
+    defaultValue: 0.00,
+    field: 'TOTAL'
   },
 
-  direccion_envio: {
-    type: DataTypes.TEXT
+  direccionEnvio: {
+    type: DataTypes.TEXT,
+    field: 'DIRECCIONENVIO'
   },
 
   notas: {
-    type: DataTypes.TEXT
+    type: DataTypes.TEXT,
+    field: 'NOTAS'    
   }
 
 }, {
-  tableName: 'orden_compra',
+  tableName: 'ORDEN_COMPRA',
   timestamps: true
 });
 
-// Relación Cliente -> OrdenCompra
-OrdenCompra.belongsTo(Cliente, {
-  foreignKey: 'cliente_id',
-  targetKey: 'id'
-});
-
-Cliente.hasMany(OrdenCompra, {
-  foreignKey: 'cliente_id',
-  sourceKey: 'id'
-});
-
-export default OrdenCompra;
+export default ORDEN_COMPRA;

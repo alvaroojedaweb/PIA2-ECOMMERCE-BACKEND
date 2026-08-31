@@ -9,10 +9,10 @@ import {
 
 const router = Router();
 
-router.get('/clientes/:id_cliente/carrito', obtenerCarritoCliente);
-router.get('/clientes/:id_cliente/carrito/:id_item', obtenerItemCarrito);
-router.post('/clientes/:id_cliente/carrito', agregarAlCarrito);
-router.put('/clientes/:id_cliente/carrito/:id_item', actualizarItemCarrito);
-router.delete('/clientes/:id_cliente/carrito/:id_item/hard', eliminarItemCarrito);
+router.get('/cliente/:id_cliente', obtenerCarritoCliente);
+router.get('/:id_item', obtenerItemCarrito);
+router.post('/cliente/:id_cliente', agregarAlCarrito);
+router.put('/:id_item', actualizarItemCarrito);
+router.delete('/:id_item/hard', eliminarItemCarrito);
 
 export default router;

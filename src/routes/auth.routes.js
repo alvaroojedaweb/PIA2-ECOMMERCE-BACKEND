@@ -10,7 +10,6 @@ router.post('/login', loginCliente);
 // POST /auth/cliente/login -> Login para clientes
 router.post('/cliente/login', loginCliente);
 
-// POST /auth/admin/login -> Login para empleados / admins
-router.post('/admin/login', loginAdmin);
+router.post('/login-admin', loginAdmin);
 
 export default router;

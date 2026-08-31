@@ -22,11 +22,10 @@ export const get = async (req, res) => {
     try {
         const id = req.params.id;
 
-        // findByPk busca un registro por su clave primaria.
         const data = await MARCA.findByPk(id);
 
         if (!data) {
-            // 404 significa "no encontrado".
+            
             return res.status(404).json({
                 estado: false,
                 mensaje: 'MARCA no encontrado',

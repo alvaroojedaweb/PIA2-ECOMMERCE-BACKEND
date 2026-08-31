@@ -1,31 +1,40 @@
 import { DataTypes } from 'sequelize';
 import sequelize from '../config/db.config.js';
 
-const ITEM_CARRITO = sequelize.define('ItemCarrito', {
-  ID: {
+const ITEM_CARRITO = sequelize.define('ITEM_CARRITO', {
+  id: {
     type: DataTypes.INTEGER,
     primaryKey: true,
-    autoIncrement: true
+    autoIncrement: true,
+    field: 'ITEMCARRITOPKID' 
   },
-  ClienteID: {
-    type: DataTypes.INTEGER,
-    allowNull: false
-  },
-  ProductoID: {
-    type: DataTypes.INTEGER,
-    allowNull: false
-  },
-  Cantidad: {
+  
+  clienteId: {
     type: DataTypes.INTEGER,
     allowNull: false,
-    defaultValue: 1
+    field: 'CLIENTEPKID'             
   },
-  Precio: {
+  
+  productoId: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    field: 'PRODUCTOPKID'
+
+  },
+  cantidad: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    defaultValue: 1,
+    field: 'CANTIDAD' 
+  },
+  
+  precio: {
     type: DataTypes.DECIMAL(10, 2),
-    allowNull: false
+    allowNull: false,
+    field: 'PRECIO' 
   }
 }, {
-  tableName: 'ItemCarrito',
+  tableName: 'ITEM_CARRITO',
   timestamps: true
 });
 
