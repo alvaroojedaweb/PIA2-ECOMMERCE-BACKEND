@@ -1,5 +1,5 @@
 import db from "../src/models/index.model.js";
-const { sequelize, MODELO, MARCA, PRODUCTO, Cliente, EMPLEADO } = db
+const { sequelize, MODELO, MARCA, PRODUCTO, CLIENTE, EMPLEADO } = db
 import { encriptarPassword } from '../src/utils/auth.js';
 
 
@@ -123,7 +123,7 @@ async function cargarClientes() {
             email: "juan.perez@ejemplo.com",
             telefono: "1122334455",
             direccion: "Calle Falsa 123",
-            password: "12345678" // Texto plano
+            password: "12345" // Texto plano
         },
         {
             nombre: "María",
@@ -148,7 +148,7 @@ async function cargarClientes() {
         item.password = await encriptarPassword(item.password);
 
         // 3. Guardas en la base de datos
-        const [cliente, creado] = await Cliente.findOrCreate({
+        const [cliente, creado] = await CLIENTE.findOrCreate({
             where: { email: item.email },
             defaults: item
         });
@@ -164,37 +164,31 @@ async function cargarClientes() {
 async function cargarEmpleados() {
     const empleados = [
         {
-            Nombre: "Juan",
-            Email: "admin@celulartech.com",
-            Contraseña: "12345678",
-            Rol: "Admin"
+            nombre: "Juan",
+            email: "admin@celulartech.com",
+            contraseña: "12asdasAA345",
+            rol: "Admin"
         },
         {
-            Nombre: "María",
-            Email: "staff1@celulartech.com",
-            Contraseña: "123456",
-            Rol: "Staff"
-        },
-        {
-            Nombre: "Carlos",
-            Email: "staff2@celulartech.com",
-            Contraseña: "123456",
-            Rol: "Staff"
+            nombre: "María",
+            email: "staff1@celulartech.com",
+            contraseña: "12asdasAA345",
+            rol: "Staff"
         }
     ];
 
     for (const item of empleados) {
-        item.Contraseña = await encriptarPassword(item.Contraseña);
+        item.contraseña = await encriptarPassword(item.contraseña);
 
         const [empleado, creado] = await EMPLEADO.findOrCreate({
-            where: { Email: item.Email },
+            where: { email: item.email },
             defaults: item
         });
 
         if (creado) {
-            console.log(`Empleado creado: ${empleado.Nombre} (${empleado.Rol})`);
+            console.log(`Empleado creado: ${empleado.nombre} (${empleado.rol})`);
         } else {
-            console.log(`El empleado con email ${empleado.Email} ya existía.`);
+            console.log(`El empleado con email ${empleado.email} ya existía.`);
         }
     }
 }
