@@ -1,5 +1,19 @@
 import db from "../models/index.model.js";
-const { PRODUCTO, MARCA, MODELO } = db
+const { PRODUCTO, MARCA, MODELO } = db;
+
+
+const formatearProducto = (p) => ({
+  id: p.id,
+  nombre: p.nombre,
+  marca: p.MODELO?.MARCA?.nombre || "Sin marca",
+  modelo: p.MODELO?.nombre || "Sin modelo",
+  descripcion: p.descripcion,
+  categoria: p.categoria,
+  precio: p.precio,
+  almacenamientoGb: p.almacenamientoGb,
+  stock: p.stock,
+  pesoG: p.pesoG
+});
 
 export const getAll = async (req, res) => {
   try {
@@ -16,20 +30,9 @@ export const getAll = async (req, res) => {
           ]
         }
       ]
-    })
+    });
 
-    const data = productos.map((p) => ({
-      id: p.id,
-      nombre: p.nombre,
-      marca: p.MODELO.MARCA.nombre,
-      modelo: p.MODELO.nombre,
-      descripcion: p.descripcion,
-      categoria: p.categoria,
-      precio: p.precio,
-      almacenamientoGb: p.almacenamientoGb,
-      stock: p.stock,
-      pesoG: p.pesoG
-    }))
+    const data = productos.map(formatearProducto);
 
     res.json({
       estado: true,
@@ -49,7 +52,6 @@ export const get = async (req, res) => {
   try {
     const id = req.params.id;
 
-    // findByPk busca un registro por su clave primaria.
     const p = await PRODUCTO.findByPk(id, {
       include: [
         {
@@ -66,29 +68,15 @@ export const get = async (req, res) => {
     });
 
     if (!p) {
-      
       return res.status(404).json({
         estado: false,
         mensaje: 'Producto no encontrado',
       });
     }
 
-    const data = {
-      id: p.id,
-      nombre: p.nombre,
-      marca: p.MODELO.MARCA.nombre,
-      modelo: p.MODELO.nombre,
-      descripcion: p.descripcion,
-      categoria: p.categoria,
-      precio: p.precio,
-      almacenamientoGb: p.almacenamientoGb,
-      stock: p.stock,
-      pesoG: p.pesoG
-    }
-
     res.json({
       estado: true,
-      data,
+      data: formatearProducto(p),
     });
 
   } catch (error) {
@@ -101,20 +89,48 @@ export const get = async (req, res) => {
   }
 };
 
+
 export const create = async (req, res) => {
   try {
-    const { id } = req.params
-    const data = await PRODUCTO.create(req.body)
+    const { nombre, descripcion, precio, categoria, stock, pesoG, almacenamientoGb, modeloId } = req.body;
+
+    
+    if (!nombre || !precio || !modeloId) {
+      return res.status(400).json({
+        estado: false,
+        mensaje: "Campos obligatorios faltantes: 'nombre', 'precio' y 'modeloId' son requeridos.",
+      });
+    }
+
+    
+    const nuevoProducto = await PRODUCTO.create({
+      nombre,
+      descripcion,
+      precio,
+      categoria,
+      stock: stock !== undefined ? stock : 0,
+      pesoG: pesoG !== undefined ? pesoG : 0,
+      almacenamientoGb,
+      modeloId
+    });
+
     res.status(201).json({
       estado: true,
-      data,
+      data: nuevoProducto,
     });
   } catch (error) {
-    console.error(error.message)
-    res.status(500).json({ error: error.message });
+    console.error('Error al crear producto:', error.message);
+    
+    
+    if (error.name === "SequelizeForeignKeyConstraintError") {
+      return res.status(400).json({
+        estado: false,
+        mensaje: "El 'modeloId' proporcionado no existe en la base de datos.",
+      });
+    }
+
+    res.status(500).json({ estado: false, error: error.message });
   }
-
-
 };
 
 export const update = async (req, res) => {
@@ -124,14 +140,13 @@ export const update = async (req, res) => {
     const p = await PRODUCTO.findByPk(id);
 
     if (!p) {
-      
       return res.status(404).json({
         estado: false,
         mensaje: 'Producto no encontrado',
       });
     }
 
-    await p.update(req.body)
+    await p.update(req.body);
 
     const pActualizado = await PRODUCTO.findByPk(id, {
       include: [
@@ -148,22 +163,9 @@ export const update = async (req, res) => {
       ]
     });
 
-    const data = {
-      id: pActualizado.id,
-      nombre: pActualizado.nombre,
-      marca: pActualizado.MODELO.MARCA.nombre,
-      modelo: pActualizado.MODELO.nombre,
-      descripcion: pActualizado.descripcion,
-      categoria: pActualizado.categoria,
-      precio: pActualizado.precio,
-      almacenamientoGb: pActualizado.almacenamientoGb,
-      stock: pActualizado.stock,
-      pesoG: pActualizado.pesoG
-    }
-
     res.json({
       estado: true,
-      data,
+      data: formatearProducto(pActualizado),
     });
   } catch (error) {
     res.status(500).json({
@@ -178,14 +180,14 @@ export const softDelete = async (req, res) => {
   try {
     res.json("softDelete");
   } catch (error) {
-    console.error(error.message)
+    console.error(error.message);
     res.status(500).json({ error: error.message });
   }
 };
 
 export const hardDelete = async (req, res) => {
   try {
-    const id = req.params.id
+    const id = req.params.id;
     const p = await PRODUCTO.findByPk(id);
 
     if (!p) {

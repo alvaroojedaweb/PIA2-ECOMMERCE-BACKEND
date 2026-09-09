@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
 import { JWT_SECRET_CLIENTE, JWT_SECRET_ADMIN } from '../utils/auth.js';
-import { EMPLEADO } from '../models/index.model.js';
 
+// Middleware base para extraer y verificar firmas JWT
 export const verificarToken = (secret) => (req, res, next) => {
   try {
     const authHeader = req.headers.authorization;
@@ -13,6 +13,7 @@ export const verificarToken = (secret) => (req, res, next) => {
       });
     }
 
+    // Extrae el token omitiendo la palabra 'Bearer'
     const token = authHeader.split(' ')[1];
     const payload = jwt.verify(token, secret);
 
@@ -27,42 +28,38 @@ export const verificarToken = (secret) => (req, res, next) => {
   }
 };
 
-// Deshabilitado temporalmente hasta tener el modelo CLIENTE en index.model.js
+// Middleware para clientes (solo valida el JWT)
 export const verificarCliente = (req, res, next) => {
-  return res.status(501).json({
-    estado: false,
-    mensaje: 'Verificación de cliente en desarrollo hasta integrar el modelo CLIENTE',
+  verificarToken(JWT_SECRET_CLIENTE)(req, res, (err) => {
+    if (err) return next(err);
+
+    const esCliente = req.user && (req.user.tipo === 'cliente' || req.user.rol === 'Cliente');
+
+    if (!esCliente) {
+      return res.status(403).json({
+        estado: false,
+        mensaje: 'Acceso reservado únicamente para clientes del e-commerce',
+      });
+    }
+
+    next();
   });
 };
 
+// Middleware para administradores / empleados (solo valida el JWT)
 export const verificarAdmin = (req, res, next) => {
-  verificarToken(JWT_SECRET_ADMIN)(req, res, async (err) => {
+  verificarToken(JWT_SECRET_ADMIN)(req, res, (err) => {
     if (err) return next(err);
 
-    try {
-      if (!req.user || req.user.tipo !== 'admin') {
-        return res.status(403).json({
-          estado: false,
-          mensaje: 'Acceso solo para administradores/empleados',
-        });
-      }
+    const esAdmin = req.user && (req.user.rol === 'Admin' || req.user.tipo === 'admin' || req.user.rol === 'Staff');
 
-      const empleado = await EMPLEADO.findByPk(req.user.id);
-      if (!empleado) {
-        return res.status(403).json({
-          estado: false,
-          mensaje: 'Empleado no encontrado',
-        });
-      }
-
-      req.empleado = empleado;
-      next();
-    } catch (error) {
-      return res.status(500).json({
+    if (!esAdmin) {
+      return res.status(403).json({
         estado: false,
-        mensaje: 'Error al verificar empleado',
-        error: error.message,
+        mensaje: 'Acceso reservado únicamente para administradores',
       });
     }
+
+    next();
   });
 };

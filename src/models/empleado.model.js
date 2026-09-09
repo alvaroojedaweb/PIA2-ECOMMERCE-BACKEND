@@ -24,7 +24,7 @@ const EMPLEADO = sequelize.define('EMPLEADO', {
     field: 'EMAIL'  
   },
 
-  contraseña: {
+  password: {
     type: DataTypes.STRING,
     allowNull: false,
     field: 'PASSWORD'
