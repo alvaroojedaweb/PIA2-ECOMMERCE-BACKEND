@@ -4,17 +4,19 @@ import {
   get,
   create,
   update,
-  softDelete,
   hardDelete
 } from '../controllers/modelo.controllers.js';
+import { verificarAdmin } from '../middleware/auth.js';
 
 const modeloRoutes = Router();
 
+// Rutas pUblicas
 modeloRoutes.get('/', getAll);
 modeloRoutes.get('/:id', get);
-modeloRoutes.post('/', create);
-modeloRoutes.put('/:id', update);
-// modeloRoutes.delete('/:id', softDelete);
-modeloRoutes.delete('/:id/hard', hardDelete);
- 
+// Rutas protegidas
+modeloRoutes.post('/', verificarAdmin, create);
+modeloRoutes.put('/:id', verificarAdmin, update);
+modeloRoutes.delete('/:id/hard', verificarAdmin, hardDelete);
+
+
 export default modeloRoutes;
