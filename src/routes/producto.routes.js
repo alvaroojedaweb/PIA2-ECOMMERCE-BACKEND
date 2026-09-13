@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import {
   getAll,
+  getAllWithPagination,
   get,
   create,
   update,
@@ -12,7 +13,7 @@ import { verificarAdmin } from '../middleware/auth.js';
 const productoRoutes = Router();
 
 // Rutas públicas (cualquiera o cliente puede ver los productos)
-productoRoutes.get('/', getAll);
+productoRoutes.get('/', getAllWithPagination);
 productoRoutes.get('/:id', get);
 
 // Rutas protegidas solo para administradores

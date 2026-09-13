@@ -48,6 +48,52 @@ export const getAll = async (req, res) => {
   }
 };
 
+export const getAllWithPagination = async (req, res) => {
+  try {
+    // 1. Obtener página y límite de la query (con valores por defecto)
+    const page = parseInt(req.query.page, 10) || 1;
+    const limit = parseInt(req.query.limit, 10) || 2;
+    const offset = (page - 1) * limit;
+
+    // 2. Usar findAndCountAll en lugar de findAll para obtener total y registros
+    const { count, rows: productos } = await PRODUCTO.findAndCountAll({
+      limit,
+      offset,
+      include: [
+        {
+          model: MODELO,
+          as: "MODELO",
+          include: [
+            {
+              model: MARCA,
+              as: "MARCA"
+            }
+          ]
+        }
+      ]
+    });
+
+    const data = productos.map(formatearProducto);
+
+    // 3. Responder con metadatos de paginación
+    res.json({
+      estado: true,
+      totalItems: count,
+      totalPages: Math.ceil(count / limit),
+      currentPage: page,
+      limit: limit,
+      data,
+    });
+  } catch (error) {
+    console.error('Error al obtener productos:', error);
+    res.status(500).json({
+      estado: false,
+      mensaje: 'Error al obtener productos',
+      error: error.message,
+    });
+  }
+};
+
 export const get = async (req, res) => {
   try {
     const id = req.params.id;

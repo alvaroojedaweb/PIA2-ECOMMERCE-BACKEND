@@ -11,7 +11,7 @@ const router = Router();
 
 router.get('/producto/:id_producto', getAllByProducto);
 router.get('/:id_imagen', getById);
-router.post('/', create);
+router.post('/producto/:id_producto', create);
 router.put('/:id_imagen', update);
 router.delete('/:id_imagen/hard', hardDelete);
 
