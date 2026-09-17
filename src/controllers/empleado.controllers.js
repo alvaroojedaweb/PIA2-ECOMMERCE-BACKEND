@@ -1,11 +1,26 @@
 import db from "../models/index.model.js";
-const { EMPLEADO } = db;
+const { EMPLEADO, ROL } = db;
 import { encriptarPassword } from "../utils/auth.js";
 
 export const getAll = async (req, res) => {
   try {
-    const empleados = await EMPLEADO.findAll();
-    res.json({ estado: true, data: empleados });
+    const empleados = await EMPLEADO.findAll({
+      include: [
+        {
+          model: ROL,
+          as: "ROL",
+          attributes: ["nombre"],
+        }
+      ]
+    });
+    const dataEmpleados = empleados.map((e) => ({
+      id: e.id,
+      nombre: e.nombre,
+      email: e.email,
+      rolId: e.rolId,
+      rolNombre: e.ROL?.nombre || null,
+    }));
+    res.json({ estado: true, data: dataEmpleados });
   } catch (error) {
     res.status(500).json({ estado: false, mensaje: error.message });
   }
@@ -14,12 +29,27 @@ export const getAll = async (req, res) => {
 export const get = async (req, res) => {
   try {
     const { id_empleado } = req.params;
-    const empleado = await EMPLEADO.findByPk(id_empleado);
+    const empleado = await EMPLEADO.findByPk(id_empleado, {
+      include: [
+        {
+          model: ROL,
+          as: "ROL",
+          attributes: ["nombre"],
+        }
+      ]
+    });
     if (!empleado)
       return res
         .status(404)
         .json({ estado: false, mensaje: "Empleado no encontrado" });
-    res.json({ estado: true, data: empleado });
+    const empleadoData = {
+      id: empleado.id,
+      nombre: empleado.nombre,
+      email: empleado.email,
+      rolId: empleado.rolId,
+      rolNombre: empleado.ROL?.nombre || null,
+    };
+    res.json({ estado: true, data: empleadoData });
   } catch (error) {
     res.status(500).json({ estado: false, mensaje: error.message });
   }
@@ -27,7 +57,7 @@ export const get = async (req, res) => {
 
 export const create = async (req, res) => {
   try {
-    const { nombre, email, password, rol } = req.body;
+    const { nombre, email, password, rolId } = req.body;
 
     let passwordHash = password;
     if (password) {
@@ -38,7 +68,7 @@ export const create = async (req, res) => {
       nombre,
       email,
       password: passwordHash, 
-      rol,
+      rolId,
     });
 
     res.status(201).json({ estado: true, data: nuevoEmpleado });
@@ -62,7 +92,7 @@ export const update = async (req, res) => {
   try {
     const { id_empleado } = req.params;
     
-    const { nombre, email, password, rol } = req.body;
+    const { nombre, email, password, rolId } = req.body;
     const empleado = await EMPLEADO.findByPk(id_empleado);
     if (!empleado)
       return res
@@ -74,7 +104,7 @@ export const update = async (req, res) => {
       passwordHash = await encriptarPassword(password);
     }
 
-    await empleado.update({ nombre, email, password: passwordHash, rol });
+    await empleado.update({ nombre, email, password: passwordHash, rolId });
     res.json({ estado: true, data: empleado });
   } catch (error) {
     res.status(500).json({ estado: false, mensaje: error.message });

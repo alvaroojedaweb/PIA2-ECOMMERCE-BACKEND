@@ -33,7 +33,7 @@ export const loginAdmin = async (req, res) => {
     }
 
     const token = generarToken(
-      { id: empleado.id, tipo: 'admin' },
+      { id: empleado.id, rol: empleado.rol },
       JWT_SECRET_ADMIN
     );
 
@@ -45,7 +45,7 @@ export const loginAdmin = async (req, res) => {
         id: empleado.id,
         nombre: empleado.nombre,
         email: empleado.email,
-        tipo: 'admin',
+        rol: empleado.rol,
       },
     });
   } catch (error) {
