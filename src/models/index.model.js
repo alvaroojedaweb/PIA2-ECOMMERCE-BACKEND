@@ -8,6 +8,7 @@ import IMAGEN_PRODUCTO from './imagenProducto.model.js';
 import ITEM_CARRITO from './itemCarrito.model.js'; 
 import ORDEN_COMPRA from './ordenCompra.model.js';
 import ITEM_ORDEN_COMPRA from './itemOrdenCompra.model.js';
+import ROL from './rol.model.js';
 
 // Relaciones Marca - Modelo
 MARCA.hasMany(MODELO, { foreignKey: 'marcaId' });
@@ -33,6 +34,9 @@ ITEM_CARRITO.belongsTo(PRODUCTO, { foreignKey: 'productoId' });
 CLIENTE.hasMany(ORDEN_COMPRA, { foreignKey: 'clienteId' });
 ORDEN_COMPRA.belongsTo(CLIENTE, { foreignKey: 'clienteId' });
 
+EMPLEADO.hasOne(ROL, { foreignKey: 'id' });
+ROL.belongsTo(EMPLEADO, { foreignKey: 'id' });
+
 EMPLEADO.hasMany(ORDEN_COMPRA, { foreignKey: 'empleadoId' });
 ORDEN_COMPRA.belongsTo(EMPLEADO, { foreignKey: 'empleadoId' });
 
@@ -48,6 +52,7 @@ const db = {
   sequelize,
   CLIENTE,
   EMPLEADO,
+  ROL,
   MARCA,
   MODELO,
   PRODUCTO,
