@@ -27,7 +27,7 @@ export const get = async (req, res) => {
 
 export const create = async (req, res) => {
   try {
-    const { nombre, email, password, rol } = req.body;
+    const { nombre, email, password, rolId } = req.body;
 
     let passwordHash = password;
     if (password) {
@@ -38,7 +38,7 @@ export const create = async (req, res) => {
       nombre,
       email,
       password: passwordHash, 
-      rol,
+      rolId,
     });
 
     res.status(201).json({ estado: true, data: nuevoEmpleado });
@@ -62,7 +62,7 @@ export const update = async (req, res) => {
   try {
     const { id_empleado } = req.params;
     
-    const { nombre, email, password, rol } = req.body;
+    const { nombre, email, password, rolId } = req.body;
     const empleado = await EMPLEADO.findByPk(id_empleado);
     if (!empleado)
       return res
@@ -74,7 +74,7 @@ export const update = async (req, res) => {
       passwordHash = await encriptarPassword(password);
     }
 
-    await empleado.update({ nombre, email, password: passwordHash, rol });
+    await empleado.update({ nombre, email, password: passwordHash, rolId });
     res.json({ estado: true, data: empleado });
   } catch (error) {
     res.status(500).json({ estado: false, mensaje: error.message });

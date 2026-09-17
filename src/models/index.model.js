@@ -34,8 +34,8 @@ ITEM_CARRITO.belongsTo(PRODUCTO, { foreignKey: 'productoId' });
 CLIENTE.hasMany(ORDEN_COMPRA, { foreignKey: 'clienteId' });
 ORDEN_COMPRA.belongsTo(CLIENTE, { foreignKey: 'clienteId' });
 
-EMPLEADO.hasOne(ROL, { foreignKey: 'id' });
-ROL.belongsTo(EMPLEADO, { foreignKey: 'id' });
+EMPLEADO.hasOne(ROL, { foreignKey: 'rolId' });
+ROL.hasMany(EMPLEADO, { foreignKey: 'rolId' });
 
 EMPLEADO.hasMany(ORDEN_COMPRA, { foreignKey: 'empleadoId' });
 ORDEN_COMPRA.belongsTo(EMPLEADO, { foreignKey: 'empleadoId' });

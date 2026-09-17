@@ -30,11 +30,10 @@ const EMPLEADO = sequelize.define('EMPLEADO', {
     field: 'PASSWORD'
   },
   
-  rol: {
-    type: DataTypes.ENUM('Staff', 'Admin'),
+  rolId: {
+    type: DataTypes.INTEGER,
     allowNull: false,
-    defaultValue: 'Staff',
-    field: 'ROL'
+    field: 'ROLID'
   }
 }, {
   tableName: 'EMPLEADO',
