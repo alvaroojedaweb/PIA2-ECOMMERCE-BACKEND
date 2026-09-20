@@ -1,5 +1,5 @@
 import db from '../models/index.model.js';
-const { EMPLEADO, CLIENTE } = db;
+const { EMPLEADO, CLIENTE, ROL } = db;
 import {
   compararPassword,
   generarToken,
@@ -12,7 +12,7 @@ export const loginAdmin = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    const empleado = await EMPLEADO.findOne({ where: { email } });
+    const empleado = await EMPLEADO.findOne({ where: { email }, include: [{ model: ROL, as: 'ROL' }] });
     if (!empleado) {
       return res.status(404).json({ estado: false, mensaje: 'Empleado no encontrado' });
     }
@@ -45,7 +45,8 @@ export const loginAdmin = async (req, res) => {
         id: empleado.id,
         nombre: empleado.nombre,
         email: empleado.email,
-        rol: empleado.rol,
+        rol: empleado.ROL?.nombre || null,
+        rolId: empleado.ROL?.id || null,
       },
     });
   } catch (error) {

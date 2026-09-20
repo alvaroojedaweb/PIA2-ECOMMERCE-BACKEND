@@ -47,7 +47,7 @@ export const get = async (req, res) => {
       nombre: empleado.nombre,
       email: empleado.email,
       rolId: empleado.rolId,
-      rolNombre: empleado.ROL?.nombre || null,
+      rol: empleado.ROL?.nombre || null,
     };
     res.json({ estado: true, data: empleadoData });
   } catch (error) {
