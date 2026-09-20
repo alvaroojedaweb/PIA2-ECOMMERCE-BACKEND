@@ -18,7 +18,7 @@ export const getAll = async (req, res) => {
       nombre: e.nombre,
       email: e.email,
       rolId: e.rolId,
-      rolNombre: e.ROL?.nombre || null,
+      rol: e.ROL?.nombre || null,
     }));
     res.json({ estado: true, data: dataEmpleados });
   } catch (error) {
