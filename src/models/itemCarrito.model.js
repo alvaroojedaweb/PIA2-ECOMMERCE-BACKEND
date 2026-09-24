@@ -25,6 +25,7 @@ const ITEM_CARRITO = sequelize.define('ITEM_CARRITO', {
     type: DataTypes.INTEGER,
     allowNull: false,
     defaultValue: 1,
+    validate: { min: 1 },
     field: 'CANTIDAD' 
   },
   
@@ -35,7 +36,14 @@ const ITEM_CARRITO = sequelize.define('ITEM_CARRITO', {
   }
 }, {
   tableName: 'ITEM_CARRITO',
-  timestamps: true
+  timestamps: true,
+  indexes: [                         
+    {
+       name: 'idx_unique_cliente_producto',
+      unique: true,
+      fields: ['CLIENTEPKID', 'PRODUCTOPKID']
+    }
+  ]
 });
 
 export default ITEM_CARRITO;

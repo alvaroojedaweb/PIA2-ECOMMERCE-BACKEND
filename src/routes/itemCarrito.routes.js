@@ -10,10 +10,13 @@ import { verificarCliente } from '../middleware/auth.js';
 
 const router = Router();
 
-router.get('/cliente/:id_cliente', verificarCliente, obtenerCarritoCliente);
-router.get('/:id_item', verificarCliente, obtenerItemCarrito);
-router.post('/cliente/:id_cliente', verificarCliente, agregarAlCarrito);
-router.put('/:id_item', verificarCliente, actualizarItemCarrito);
-router.delete('/:id_item/hard', verificarCliente, eliminarItemCarrito);
+// Todas las rutas de carrito exigen autenticación de cliente
+router.use(verificarCliente);
+
+router.get('/', obtenerCarritoCliente);
+router.get('/:id_item', obtenerItemCarrito);
+router.post('/', agregarAlCarrito);
+router.put('/:id_item', actualizarItemCarrito);
+router.delete('/:id_item', eliminarItemCarrito);
 
 export default router;
