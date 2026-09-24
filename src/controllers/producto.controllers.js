@@ -6,7 +6,7 @@ const formatearProducto = (p) => ({
   id: p.id,
   nombre: p.nombre,
   marca: p.MODELO?.MARCA?.nombre || "Sin marca",
-  marcaId: p.MODELO?.MARCA?.id || "Sin marca",
+  marcaId: p.MODELO?.MARCA?.id ?? null,
   modelo: p.MODELO?.nombre,
   modeloId: p.MODELO?.id,
   descripcion: p.descripcion,

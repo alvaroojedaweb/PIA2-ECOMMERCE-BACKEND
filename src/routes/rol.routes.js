@@ -11,10 +11,10 @@ import { verificarAdmin } from '../middleware/auth.js';
 const rolRoutes = Router();
 
 // Rutas protegidas solo para administradores/empleados
-rolRoutes.get('/', getAll);
-rolRoutes.get('/:id', get);
-rolRoutes.post('/', create);
-rolRoutes.put('/:id', update);
-rolRoutes.delete('/:id/hard', hardDelete);
+rolRoutes.get('/', verificarAdmin, getAll);
+rolRoutes.get('/:id', verificarAdmin, get);
+rolRoutes.post('/', verificarAdmin, create);
+rolRoutes.put('/:id', verificarAdmin, update);
+rolRoutes.delete('/:id/hard', verificarAdmin, hardDelete);
 
 export default rolRoutes;

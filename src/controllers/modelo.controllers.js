@@ -21,16 +21,13 @@ export const getAll = async (req, res) => {
 
 export const get = async (req, res) => {
   try {
-    const { id_marca, id_modelo } = req.params;
-
-    const data = await MODELO.findByPk(id_modelo, {
-      where: { marcaId: id_marca },
-    });
+    const { id } = req.params;
+    const data = await MODELO.findByPk(id);
 
     if (!data) {
       return res.status(404).json({
         estado: false,
-        mensaje: "MODELO no encontrado",
+        mensaje: 'MODELO no encontrado',
       });
     }
 
@@ -39,15 +36,14 @@ export const get = async (req, res) => {
       data,
     });
   } catch (error) {
-    console.error("Error al obtener MODELO:", error);
+    console.error('Error al obtener MODELO:', error);
     res.status(500).json({
       estado: false,
-      mensaje: "Error al obtener MODELO",
+      mensaje: 'Error al obtener MODELO',
       error: error.message,
     });
   }
 };
-
 export const create = async (req, res) => {
   try {
     const nombre = req.body?.nombre;
