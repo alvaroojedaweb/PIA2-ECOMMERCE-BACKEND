@@ -107,3 +107,69 @@ export const loginCliente = async (req, res) => {
     });
   }
 };
+
+// POST /api/auth/login  (clientes)
+export const login = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    if (typeof email !== 'string' || typeof password !== 'string' || !email || !password) {
+      return res.status(400).json({ estado: false, mensaje: 'Email y contraseña son requeridos' });
+    }
+
+    // scope('conPassword'): el modelo oculta el hash por defecto y aquí sí lo necesitamos
+    const cliente = await CLIENTE.scope('conPassword').findOne({ where: { email } });
+
+    // Un único mensaje para "no existe" y "clave incorrecta": así nadie puede
+    // averiguar qué emails están registrados.
+    const esValida = cliente && (await compararPassword(password, cliente.password));
+    if (!esValida) {
+      return res.status(401).json({ estado: false, mensaje: 'Credenciales inválidas' });
+    }
+
+    const token = generarToken(
+      { id: cliente.id, tipo: 'cliente', rol: 'client' },
+      JWT_SECRET_CLIENTE
+    );
+
+    // La clave es "usuario" y NO "data": el interceptor de Axios del frontend
+    // devuelve solo el contenido de "data" y se perdería el token.
+    res.json({
+      estado: true,
+      token,
+      usuario: { id: cliente.id, nombre: cliente.nombre, email: cliente.email, rol: 'client' },
+    });
+  } catch (error) {
+    console.error('Error en login:', error);
+    res.status(500).json({ estado: false, mensaje: 'Error al iniciar sesión' });
+  }
+};
+
+// GET /api/auth/me  (requiere verificarCliente)
+export const me = async (req, res) => {
+  try {
+    // El id sale del token ya validado, nunca de la URL ni del body
+    const cliente = await CLIENTE.findByPk(req.user.id);
+
+    // Token válido pero el cliente ya no existe: 401 para que el frontend cierre la sesión
+    if (!cliente) {
+      return res.status(401).json({ estado: false, mensaje: 'La sesión ya no es válida' });
+    }
+
+    res.json({
+      estado: true,
+      usuario: {
+        id: cliente.id,
+        nombre: cliente.nombre,
+        apellido: cliente.apellido,
+        email: cliente.email,
+        telefono: cliente.telefono,
+        direccion: cliente.direccion,
+        rol: 'client',
+      },
+    });
+  } catch (error) {
+    console.error('Error en /auth/me:', error);
+    res.status(500).json({ estado: false, mensaje: 'Error al obtener el usuario' });
+  }
+};
