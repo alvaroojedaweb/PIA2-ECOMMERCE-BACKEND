@@ -65,8 +65,7 @@ export const loginCliente = async (req, res) => {
       });
     }
 
-    const cliente = await CLIENTE.findOne({ where: { email } });
-
+    const cliente = await CLIENTE.scope('conPassword').findOne({ where: { email } });
     if (!cliente) {
       return res.status(404).json({
         estado: false,

@@ -1,5 +1,5 @@
 import db from "../src/models/index.model.js";
-const { sequelize, MODELO, MARCA, PRODUCTO, CLIENTE, EMPLEADO } = db
+const { sequelize, MODELO, MARCA, PRODUCTO, CLIENTE, EMPLEADO, ROL } = db;
 import { encriptarPassword } from '../src/utils/auth.js';
 
 
@@ -163,22 +163,26 @@ async function cargarClientes() {
 
 async function cargarEmpleados() {
     const empleados = [
+       
         {
             nombre: "Juan",
             email: "admin@celulartech.com",
-            contraseña: "12asdasAA345",
-            rol: "Admin"
+            password: "12asdasAA345", 
+            rolId: 1                 
         },
         {
             nombre: "María",
             email: "staff1@celulartech.com",
-            contraseña: "12asdasAA345",
-            rol: "Staff"
+            password: "12asdasAA345", 
+            rolId: 2                  
         }
     ];
 
+    
+
     for (const item of empleados) {
-        item.contraseña = await encriptarPassword(item.contraseña);
+        // Encriptamos la propiedad password
+        item.password = await encriptarPassword(item.password);
 
         const [empleado, creado] = await EMPLEADO.findOrCreate({
             where: { email: item.email },
@@ -186,10 +190,25 @@ async function cargarEmpleados() {
         });
 
         if (creado) {
-            console.log(`Empleado creado: ${empleado.nombre} (${empleado.rol})`);
+            console.log(`Empleado creado: ${empleado.nombre}`);
         } else {
             console.log(`El empleado con email ${empleado.email} ya existía.`);
         }
+    }
+}
+
+    async function cargarRoles() {
+    const roles = [
+        { id: 1, nombre: "Admin" },
+        { id: 2, nombre: "Staff" }
+    ];
+
+    for (const item of roles) {
+        const [rol] = await ROL.findOrCreate({
+            where: { nombre: item.nombre },
+            defaults: item
+        });
+        console.log(`Rol cargado: ${rol.nombre}`);
     }
 }
 
@@ -201,7 +220,8 @@ const runSeed = async () => {
 
         await sequelize.sync({ force: true }); //true solo en desarrollo
         console.log('✅ Base de datos sincronizada');
-
+        
+        await cargarRoles();
         await cargarMarcas()
         await cargarModelos()
         await cargarProductos()

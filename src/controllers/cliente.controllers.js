@@ -94,46 +94,37 @@ export const crear = async (req, res) => {
 export const actualizar = async (req, res) => {
     try {
         const id = parseInt(req.params.id, 10);
-        const { nombre, apellido, email, telefono, direccion, password } = req.body;
+        const { password } = req.body;
         const cliente = await CLIENTE.findByPk(id);
 
         if (!cliente) {
-            return res.status(404).json({ 
-                estado: false, 
-                mensaje: 'Cliente no encontrado' 
+            return res.status(404).json({
+                estado: false,
+                mensaje: 'Cliente no encontrado'
             });
         }
 
-        let passwordHash = cliente.password;
-        if (password) {
-            passwordHash = await encriptarPassword(password);
+        // Solo se actualizan los campos que llegaron en el body
+        const campos = {};
+        for (const k of ['nombre', 'apellido', 'email', 'telefono', 'direccion']) {
+            if (req.body[k] !== undefined) campos[k] = req.body[k];
         }
+        if (password) campos.password = await encriptarPassword(password);
 
-        await cliente.update({
-            nombre,
-            apellido,
-            email,
-            telefono,
-            direccion,
-            password: passwordHash
-        });
+        await cliente.update(campos);
 
         const clienteResponse = cliente.toJSON();
         delete clienteResponse.password;
 
-        res.json({ 
-            estado: true, 
-            data: clienteResponse 
-        });
+        res.json({ estado: true, data: clienteResponse });
     } catch (error) {
-        res.status(500).json({ 
-            estado: false, 
-            mensaje: 'Error al actualizar cliente', 
-            error: error.message 
+        res.status(500).json({
+            estado: false,
+            mensaje: 'Error al actualizar cliente',
+            error: error.message
         });
     }
 };
-
 export const eliminar = async (req, res) => {
     try {
         const id = parseInt(req.params.id, 10);
@@ -160,3 +151,4 @@ export const eliminar = async (req, res) => {
         });
     }
 };
+
