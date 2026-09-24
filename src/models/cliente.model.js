@@ -42,9 +42,10 @@ const CLIENTE = sequelize.define('CLIENTE', {
         field: 'PASSWORD' 
     },
 }, {
-    tableName: 'CLIENTE',    
-    timestamps: true,        
-  
+    tableName: 'CLIENTE',
+    timestamps: true,
+    defaultScope: { attributes: { exclude: ['password'] } },
+    scopes: { conPassword: {} },
 });
 
 export default CLIENTE;
