@@ -12,7 +12,10 @@ export const loginAdmin = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    const empleado = await EMPLEADO.findOne({ where: { email }, include: [{ model: ROL, as: 'ROL' }] });
+    const empleado = await EMPLEADO.scope('conPassword').findOne({
+  where: { email },
+  include: [{ model: ROL, as: 'ROL' }]
+});
     if (!empleado) {
       return res.status(404).json({ estado: false, mensaje: 'Empleado no encontrado' });
     }
@@ -111,17 +114,21 @@ export const loginCliente = async (req, res) => {
 // POST /api/auth/login  (clientes)
 export const login = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { email, password } = req.body ?? {};
 
-    if (typeof email !== 'string' || typeof password !== 'string' || !email || !password) {
-      return res.status(400).json({ estado: false, mensaje: 'Email y contraseña son requeridos' });
+    // Validación de tipo y formato antes de tocar la base de datos
+    const emailValido = typeof email === 'string' && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
+    const passwordValido = typeof password === 'string' && password.length > 0;
+
+    if (!emailValido || !passwordValido) {
+      return res.status(400).json({
+        estado: false,
+        mensaje: 'Email o contraseña con formato inválido'
+      });
     }
 
-    // scope('conPassword'): el modelo oculta el hash por defecto y aquí sí lo necesitamos
-    const cliente = await CLIENTE.scope('conPassword').findOne({ where: { email } });
+    const cliente = await CLIENTE.scope('conPassword').findOne({ where: { email: email.trim() } });
 
-    // Un único mensaje para "no existe" y "clave incorrecta": así nadie puede
-    // averiguar qué emails están registrados.
     const esValida = cliente && (await compararPassword(password, cliente.password));
     if (!esValida) {
       return res.status(401).json({ estado: false, mensaje: 'Credenciales inválidas' });
@@ -132,8 +139,6 @@ export const login = async (req, res) => {
       JWT_SECRET_CLIENTE
     );
 
-    // La clave es "usuario" y NO "data": el interceptor de Axios del frontend
-    // devuelve solo el contenido de "data" y se perdería el token.
     res.json({
       estado: true,
       token,
@@ -148,10 +153,13 @@ export const login = async (req, res) => {
 // GET /api/auth/me  (requiere verificarCliente)
 export const me = async (req, res) => {
   try {
-    // El id sale del token ya validado, nunca de la URL ni del body
-    const cliente = await CLIENTE.findByPk(req.user.id);
+    const id = req.user?.id;
+    if (!id) {
+      return res.status(401).json({ estado: false, mensaje: 'Token inválido' });
+    }
 
-    // Token válido pero el cliente ya no existe: 401 para que el frontend cierre la sesión
+    const cliente = await CLIENTE.findByPk(id);
+
     if (!cliente) {
       return res.status(401).json({ estado: false, mensaje: 'La sesión ya no es válida' });
     }
