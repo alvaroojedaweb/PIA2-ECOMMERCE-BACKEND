@@ -48,21 +48,31 @@ export const obtenerPorId = async (req, res) => {
 
 export const crear = async (req, res) => {
     try {
-        const { nombre, apellido, email, telefono, direccion, password } = req.body;
+        const { nombre, apellido, email, telefono, direccion, password } = req.body ?? {};
 
-        if (!password) {
+        // Validaciones de entrada, antes de tocar la base de datos
+        if (typeof nombre !== 'string' || !nombre.trim()) {
+            return res.status(400).json({ estado: false, mensaje: 'El nombre es obligatorio' });
+        }
+
+        const emailValido = typeof email === 'string' && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
+        if (!emailValido) {
+            return res.status(400).json({ estado: false, mensaje: 'El email no tiene un formato válido' });
+        }
+
+        if (typeof password !== 'string' || password.length < 6) {
             return res.status(400).json({
                 estado: false,
-                mensaje: 'La contraseña es obligatoria'
+                mensaje: 'La contraseña es obligatoria y debe tener al menos 6 caracteres'
             });
         }
 
         const passwordHash = await encriptarPassword(password);
 
         const nuevoCliente = await CLIENTE.create({
-            nombre,
+            nombre: nombre.trim(),
             apellido,
-            email,
+            email: email.trim(),
             telefono,
             direccion,
             password: passwordHash
@@ -71,9 +81,9 @@ export const crear = async (req, res) => {
         const clienteResponse = nuevoCliente.toJSON();
         delete clienteResponse.password;
 
-        res.status(201).json({ 
-            estado: true, 
-            data: clienteResponse 
+        res.status(201).json({
+            estado: true,
+            data: clienteResponse
         });
     } catch (error) {
         if (error.name === 'SequelizeValidationError' || error.name === 'SequelizeUniqueConstraintError') {
@@ -83,10 +93,10 @@ export const crear = async (req, res) => {
                 error: error.message
             });
         }
-        res.status(500).json({ 
-            estado: false, 
-            mensaje: 'Error al crear cliente', 
-            error: error.message 
+        console.error('Error al crear cliente:', error);
+        res.status(500).json({
+            estado: false,
+            mensaje: 'Error al crear cliente'
         });
     }
 };
