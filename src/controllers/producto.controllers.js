@@ -1,214 +1,226 @@
 import db from "../models/index.model.js";
-const { PRODUCTO, MARCA, MODELO } = db;
+import { Op } from "sequelize";
+const { PRODUCTO, MARCA, MODELO, CATEGORIA, IMAGEN_PRODUCTO } = db;
 
-
+// Formatea un producto para devolver al frontend.
+// Incluye marca, modelo, categoría e imágenes.
 const formatearProducto = (p) => ({
   id: p.id,
   nombre: p.nombre,
-  marca: p.MODELO?.MARCA?.nombre || "Sin marca",
-  marcaId: p.MODELO?.MARCA?.id ?? null,
-  modelo: p.MODELO?.nombre,
-  modeloId: p.MODELO?.id,
   descripcion: p.descripcion,
-  categoria: p.categoria,
   precio: p.precio,
-  almacenamientoGb: p.almacenamientoGb,
   stock: p.stock,
-  pesoG: p.pesoG
+  pesoG: p.pesoG,
+  almacenamientoGb: p.almacenamientoGb,
+  // Modelo y marca
+  modeloId: p.MODELO?.id ?? null,
+  modelo: p.MODELO?.nombre ?? null,
+  marcaId: p.MODELO?.MARCA?.id ?? null,
+  marca: p.MODELO?.MARCA?.nombre ?? "Sin marca",
+  // Categoría
+  categoriaId: p.CATEGORIA?.id ?? null,
+  categoria: p.CATEGORIA?.nombre ?? null,
+  // Imágenes (el alias en el modelo es "imagenes")
+  imagenes: (p.imagenes || []).map((img) => ({
+    id: img.id,
+    url: img.imagenUrl,
+    orden: img.orden,
+  })),
 });
 
+// Include que se reutiliza en todas las consultas de productos
+const includeCompleto = [
+  {
+    model: MODELO,
+    as: "MODELO",
+    include: [{ model: MARCA, as: "MARCA" }],
+  },
+  { model: CATEGORIA, as: "CATEGORIA" },
+  { model: IMAGEN_PRODUCTO, as: "imagenes" },
+];
+
+// GET /api/productos
+// Acepta: ?page=, ?limit=, ?categoriaId=, ?marcaId=, ?q=
 export const getAll = async (req, res) => {
   try {
-    const productos = await PRODUCTO.findAll({
-      include: [
-        {
-          model: MODELO,
-          as: "MODELO",
-          include: [
-            {
-              model: MARCA,
-              as: "MARCA"
-            }
-          ]
-        }
-      ]
-    });
-
-    const data = productos.map(formatearProducto);
-
-    res.json({
-      estado: true,
-      data,
-    });
-  } catch (error) {
-    console.error('Error al obtener productos:', error);
-    res.status(500).json({
-      estado: false,
-      mensaje: 'Error al obtener productos',
-      error: error.message,
-    });
-  }
-};
-
-export const getAllWithPagination = async (req, res) => {
-  try {
-    // 1. Obtener página y límite de la query (con valores por defecto)
-    const page = parseInt(req.query.page, 10) || 1;
-    const limit = parseInt(req.query.limit, 10) || 2;
+    const page = Math.max(parseInt(req.query.page, 10) || 1, 1);
+    const limit = Math.min(Math.max(parseInt(req.query.limit, 10) || 10, 1), 100);
     const offset = (page - 1) * limit;
 
-    // 2. Usar findAndCountAll en lugar de findAll para obtener total y registros
-    const { count, rows: productos } = await PRODUCTO.findAndCountAll({
+    const { categoriaId, marcaId, q } = req.query;
+
+    const where = {};
+    if (categoriaId) where.categoriaId = categoriaId;
+    if (q) where.nombre = { [Op.like]: `%${q}%` };
+
+    // Filtro por marca: se aplica en el include de MODELO
+    const includeModelo = {
+      model: MODELO,
+      as: "MODELO",
+      include: [{ model: MARCA, as: "MARCA" }],
+    };
+    if (marcaId) includeModelo.where = { marcaId };
+
+    const { count, rows } = await PRODUCTO.findAndCountAll({
+      where,
       limit,
       offset,
+      order: [["id", "ASC"]],
       include: [
-        {
-          model: MODELO,
-          as: "MODELO",
-          include: [
-            {
-              model: MARCA,
-              as: "MARCA"
-            }
-          ]
-        }
-      ]
+        includeModelo,
+        { model: CATEGORIA, as: "CATEGORIA" },
+        { model: IMAGEN_PRODUCTO, as: "imagenes" },
+      ],
+      distinct: true,
     });
 
-    const data = productos.map(formatearProducto);
-
-    // 3. Responder con metadatos de paginación
     res.json({
       estado: true,
       totalItems: count,
-      totalPages: Math.ceil(count / limit),
+      totalPages: Math.ceil(count / limit) || 1,
       currentPage: page,
-      limit: limit,
-      data,
+      limit,
+      data: rows.map(formatearProducto),
     });
   } catch (error) {
-    console.error('Error al obtener productos:', error);
+    console.error("Error al obtener productos:", error);
     res.status(500).json({
       estado: false,
-      mensaje: 'Error al obtener productos',
+      mensaje: "Error al obtener productos",
       error: error.message,
     });
   }
 };
 
+// Alias para no romper compatibilidad con rutas viejas
+export const getAllWithPagination = getAll;
+
+// GET /api/productos/:id
 export const get = async (req, res) => {
   try {
-    const id = req.params.id;
-
-    const p = await PRODUCTO.findByPk(id, {
-      include: [
-        {
-          model: MODELO,
-          as: "MODELO",
-          include: [
-            {
-              model: MARCA,
-              as: "MARCA"
-            }
-          ]
-        }
-      ]
-    });
+    const { id } = req.params;
+    const p = await PRODUCTO.findByPk(id, { include: includeCompleto });
 
     if (!p) {
       return res.status(404).json({
         estado: false,
-        mensaje: 'Producto no encontrado',
+        mensaje: "Producto no encontrado",
       });
     }
 
-    res.json({
-      estado: true,
-      data: formatearProducto(p),
-    });
-
+    res.json({ estado: true, data: formatearProducto(p) });
   } catch (error) {
-    console.error('Error al obtener producto:', error);
+    console.error("Error al obtener producto:", error);
     res.status(500).json({
       estado: false,
-      mensaje: 'Error al obtener producto',
+      mensaje: "Error al obtener producto",
       error: error.message,
     });
   }
 };
 
-
+// POST /api/productos
 export const create = async (req, res) => {
   try {
-    const { nombre, descripcion, precio, categoria, stock, pesoG, almacenamientoGb, modeloId } = req.body;
+    const {
+      nombre,
+      descripcion,
+      precio,
+      categoriaId,
+      stock,
+      pesoG,
+      almacenamientoGb,
+      modeloId,
+    } = req.body;
 
-    
-    if (!nombre || !precio || !modeloId) {
+    // Validaciones básicas
+    if (!nombre || !descripcion || !precio || !categoriaId || !modeloId) {
       return res.status(400).json({
         estado: false,
-        mensaje: "Campos obligatorios faltantes: 'nombre', 'precio' y 'modeloId' son requeridos.",
+        mensaje:
+          "Campos obligatorios: nombre, descripcion, precio, categoriaId y modeloId",
       });
     }
 
-    
+    if (typeof precio !== "number" || precio < 0) {
+      return res.status(400).json({
+        estado: false,
+        mensaje: "El precio debe ser un número mayor o igual a 0",
+      });
+    }
+
     const nuevoProducto = await PRODUCTO.create({
       nombre,
       descripcion,
       precio,
-      categoria,
-      stock: stock !== undefined ? stock : 0,
-      pesoG: pesoG !== undefined ? pesoG : 0,
-      almacenamientoGb,
-      modeloId
+      categoriaId,
+      stock: stock ?? 0,
+      pesoG: pesoG ?? 0,
+      almacenamientoGb: almacenamientoGb ?? null,
+      modeloId,
+    });
+
+    // Recargamos con includes para devolver todo formateado
+    const pCompleto = await PRODUCTO.findByPk(nuevoProducto.id, {
+      include: includeCompleto,
     });
 
     res.status(201).json({
       estado: true,
-      data: nuevoProducto,
+      data: formatearProducto(pCompleto),
     });
   } catch (error) {
-    console.error('Error al crear producto:', error.message);
-    
-    
+    console.error("Error al crear producto:", error.message);
     if (error.name === "SequelizeForeignKeyConstraintError") {
       return res.status(400).json({
         estado: false,
-        mensaje: "El 'modeloId' proporcionado no existe en la base de datos.",
+        mensaje: "categoriaId o modeloId no existen en la base de datos",
       });
     }
-
+    if (error.name === "SequelizeValidationError") {
+      return res.status(400).json({
+        estado: false,
+        mensaje: "Datos inválidos",
+        error: error.message,
+      });
+    }
     res.status(500).json({ estado: false, error: error.message });
   }
 };
 
+// PUT /api/productos/:id
 export const update = async (req, res) => {
   try {
-    const id = req.params.id;
-
+    const { id } = req.params;
     const p = await PRODUCTO.findByPk(id);
 
     if (!p) {
       return res.status(404).json({
         estado: false,
-        mensaje: 'Producto no encontrado',
+        mensaje: "Producto no encontrado",
       });
     }
 
-    await p.update(req.body);
+    // Whitelist: solo estos campos se pueden actualizar
+    const camposPermitidos = [
+      "nombre",
+      "descripcion",
+      "precio",
+      "categoriaId",
+      "stock",
+      "pesoG",
+      "almacenamientoGb",
+      "modeloId",
+    ];
+    const cambios = {};
+    for (const k of camposPermitidos) {
+      if (req.body[k] !== undefined) cambios[k] = req.body[k];
+    }
+
+    await p.update(cambios);
 
     const pActualizado = await PRODUCTO.findByPk(id, {
-      include: [
-        {
-          model: MODELO,
-          as: "MODELO",
-          include: [
-            {
-              model: MARCA,
-              as: "MARCA"
-            }
-          ]
-        }
-      ]
+      include: includeCompleto,
     });
 
     res.json({
@@ -216,46 +228,46 @@ export const update = async (req, res) => {
       data: formatearProducto(pActualizado),
     });
   } catch (error) {
+    console.error("Error al actualizar producto:", error);
     res.status(500).json({
       estado: false,
-      mensaje: 'Error al actualizar producto',
+      mensaje: "Error al actualizar producto",
       error: error.message,
     });
   }
 };
 
-export const softDelete = async (req, res) => {
-  try {
-    res.json("softDelete");
-  } catch (error) {
-    console.error(error.message);
-    res.status(500).json({ error: error.message });
-  }
-};
-
+// DELETE /api/productos/:id/hard
 export const hardDelete = async (req, res) => {
   try {
-    const id = req.params.id;
+    const { id } = req.params;
     const p = await PRODUCTO.findByPk(id);
 
     if (!p) {
       return res.status(404).json({
         estado: false,
-        mensaje: 'Producto no encontrado',
+        mensaje: "Producto no encontrado",
       });
     }
 
     await p.destroy();
     res.json({
       estado: true,
-      mensaje: 'Producto eliminado correctamente',
+      mensaje: "Producto eliminado correctamente",
     });
-
   } catch (error) {
     res.status(500).json({
       estado: false,
-      mensaje: 'Error al eliminar producto',
+      mensaje: "Error al eliminar producto",
       error: error.message,
     });
   }
+};
+
+// Stub por ahora (soft delete real queda para Etapa 5)
+export const softDelete = async (req, res) => {
+  res.status(501).json({
+    estado: false,
+    mensaje: "Soft delete aún no implementado",
+  });
 };

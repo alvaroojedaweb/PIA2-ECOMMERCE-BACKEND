@@ -17,14 +17,14 @@ const PRODUCTO = sequelize.define('PRODUCTO', {
     type: DataTypes.INTEGER,
     allowNull: false,
     validate: {
-      min: 0 
+      min: 0
     },
     field: 'PRECIO'
   },
-  categoria: {
-    type: DataTypes.ENUM('CELULARES', 'ACCESORIOS'),
+  categoriaId: {
+    type: DataTypes.INTEGER,
     allowNull: false,
-    field: 'CATEGORIA'
+    field: 'CATEGORIAPKID'
   },
   nombre: {
     type: DataTypes.STRING,
@@ -33,7 +33,7 @@ const PRODUCTO = sequelize.define('PRODUCTO', {
   },
   almacenamientoGb: {
     type: DataTypes.INTEGER,
-    allowNull: true, 
+    allowNull: true,
     field: 'ALMACENAMIENTO_GB'
   },
   stock: {
