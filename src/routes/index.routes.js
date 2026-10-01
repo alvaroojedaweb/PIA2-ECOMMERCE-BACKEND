@@ -10,6 +10,7 @@ import productoRoutes from './producto.routes.js';
 import itemCarritoRoutes from './itemCarrito.routes.js';
 import ordenCompraRoutes from './ordenCompra.routes.js';
 import itemOrdenCompraRoutes from './itemOrdenCompra.routes.js';
+import categoriaRoutes from './categoria.routes.js';
 
 const router = Router();
 
@@ -24,5 +25,6 @@ router.use('/productos', productoRoutes);
 router.use('/carrito', itemCarritoRoutes);
 router.use('/ordenes-compra', ordenCompraRoutes);
 router.use('/items-orden-compra', itemOrdenCompraRoutes);
+router.use('/categorias', categoriaRoutes);
 
 export default router;

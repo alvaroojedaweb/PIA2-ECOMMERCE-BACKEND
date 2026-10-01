@@ -3,6 +3,7 @@ import CLIENTE from './cliente.model.js';
 import EMPLEADO from './empleado.model.js';
 import MARCA from './marca.model.js'; 
 import MODELO from './modelo.model.js';
+import CATEGORIA from './categoria.model.js';
 import PRODUCTO from './producto.model.js';
 import IMAGEN_PRODUCTO from './imagenProducto.model.js';
 import ITEM_CARRITO from './itemCarrito.model.js'; 
@@ -17,6 +18,10 @@ MODELO.belongsTo(MARCA, { foreignKey: 'marcaId' });
 // Relaciones Modelo - Producto
 MODELO.hasMany(PRODUCTO, { foreignKey: 'modeloId' });
 PRODUCTO.belongsTo(MODELO, { foreignKey: 'modeloId' });
+
+// Relaciones Categoria - Producto
+CATEGORIA.hasMany(PRODUCTO, { foreignKey: 'categoriaId', as: 'productos' });
+PRODUCTO.belongsTo(CATEGORIA, { foreignKey: 'categoriaId', as: 'CATEGORIA' });
 
 // Relaciones Producto - ImagenProducto
 PRODUCTO.hasMany(IMAGEN_PRODUCTO, { foreignKey: 'productoId', as: 'imagenes' });
@@ -55,6 +60,7 @@ const db = {
   ROL,
   MARCA,
   MODELO,
+  CATEGORIA,
   PRODUCTO,
   IMAGEN_PRODUCTO,
   ITEM_CARRITO,
@@ -68,6 +74,7 @@ export {
   EMPLEADO,
   MARCA,
   MODELO,
+  CATEGORIA,
   PRODUCTO,
   IMAGEN_PRODUCTO,
   ITEM_CARRITO,
