@@ -17,7 +17,11 @@ export const getAll = async (req, res) => {
     const ordenes = await ORDEN_COMPRA.findAll({
       include: [
         { model: CLIENTE, attributes: ["id", "nombre", "email"] },
-        { model: ITEM_ORDEN_COMPRA, as: "items" },
+        {
+          model: ITEM_ORDEN_COMPRA,
+          as: "items",
+          include: [{ model: PRODUCTO, attributes: ["id", "nombre", "precio"] }],
+        },
       ],
       order: [["id", "DESC"]],
     });
@@ -37,7 +41,13 @@ export const getMisOrdenes = async (req, res) => {
     const clienteId = req.user.id;
     const ordenes = await ORDEN_COMPRA.findAll({
       where: { clienteId },
-      include: [{ model: ITEM_ORDEN_COMPRA, as: "items" }],
+      include: [
+        {
+          model: ITEM_ORDEN_COMPRA,
+          as: "items",
+          include: [{ model: PRODUCTO, attributes: ["id", "nombre", "precio"] }],
+        },
+      ],
       order: [["id", "DESC"]],
     });
     res.json({ estado: true, data: ordenes });
@@ -57,7 +67,11 @@ export const getById = async (req, res) => {
     const orden = await ORDEN_COMPRA.findByPk(id, {
       include: [
         { model: CLIENTE, attributes: ["id", "nombre", "email"] },
-        { model: ITEM_ORDEN_COMPRA, as: "items" },
+        {
+          model: ITEM_ORDEN_COMPRA,
+          as: "items",
+          include: [{ model: PRODUCTO, attributes: ["id", "nombre", "precio"] }],
+        },
       ],
     });
 
@@ -67,7 +81,6 @@ export const getById = async (req, res) => {
         .json({ estado: false, mensaje: "Orden no encontrada" });
     }
 
-    // Si es cliente, solo puede ver sus propias órdenes
     if (req.user.tipo === "cliente" && orden.clienteId !== req.user.id) {
       return res
         .status(403)
@@ -84,7 +97,6 @@ export const getById = async (req, res) => {
 // ============================================================
 // POST /api/ordenes-compra
 // Cliente: crea una orden desde su carrito (transaccional)
-// Admin: puede crear ordenes manualmente pasando items en el body
 // ============================================================
 export const create = async (req, res) => {
   const t = await sequelize.transaction();
@@ -99,12 +111,13 @@ export const create = async (req, res) => {
         mensaje: "La dirección de envío es obligatoria",
       });
     }
-
+  
     // 1. Leer carrito del cliente
     const itemsCarrito = await ITEM_CARRITO.findAll({
       where: { clienteId },
       include: [{ model: PRODUCTO }],
       transaction: t,
+      lock: t.LOCK.UPDATE // 🔒 Protege contra condiciones de carrera bloqueando las filas de stock
     });
 
     if (itemsCarrito.length === 0) {
@@ -146,7 +159,7 @@ export const create = async (req, res) => {
         cantidad: item.cantidad,
         precioUnitario,
         subtotal,
-        _productoRef: producto, // para descontar stock después
+        _productoRef: producto,
       });
     }
 
@@ -175,7 +188,7 @@ export const create = async (req, res) => {
         { transaction: t }
       );
 
-      // Descontar stock
+      // Descontar stock de forma segura
       await item._productoRef.update(
         { stock: item._productoRef.stock - item.cantidad },
         { transaction: t }
@@ -188,27 +201,35 @@ export const create = async (req, res) => {
       transaction: t,
     });
 
+    // Confirmar todos los cambios en la Base de Datos
     await t.commit();
 
-    // 6. Recargar la orden con items
+    // 6. Recargar la orden con items para devolverla limpia al cliente
     const ordenCompleta = await ORDEN_COMPRA.findByPk(nuevaOrden.id, {
       include: [
         { model: CLIENTE, attributes: ["id", "nombre", "email"] },
-        { model: ITEM_ORDEN_COMPRA, as: "items" },
+        {
+          model: ITEM_ORDEN_COMPRA,
+          as: "items",
+          include: [{ model: PRODUCTO, attributes: ["id", "nombre", "precio"] }],
+        },
       ],
     });
 
-    res.status(201).json({ estado: true, data: ordenCompleta });
+    // Retornar respuesta exitosa (Corregido)
+    return res.status(201).json({ estado: true, data: ordenCompleta });
+
   } catch (error) {
-    await t.rollback();
+    // Si la transacción sigue abierta por un error inesperado, hacemos rollback
+    if (!t.finished) await t.rollback();
     console.error("Error al crear orden:", error);
-    res.status(500).json({ estado: false, mensaje: error.message });
+    return res.status(500).json({ estado: false, mensaje: error.message });
   }
 };
 
 // ============================================================
 // PUT /api/ordenes-compra/:id
-// Admin: actualizar estado de la orden
+// Admin: actualizar estado de la orden (Corregido: fuera de create)
 // ============================================================
 export const update = async (req, res) => {
   try {
@@ -221,7 +242,6 @@ export const update = async (req, res) => {
         .json({ estado: false, mensaje: "Orden no encontrada" });
     }
 
-    // Solo se puede cambiar el estado (y notas/dirección)
     const camposPermitidos = ["estado", "notas", "direccionEnvio"];
     const cambios = {};
     for (const k of camposPermitidos) {
@@ -229,9 +249,9 @@ export const update = async (req, res) => {
     }
 
     await orden.update(cambios);
-    res.json({ estado: true, data: orden });
+    return res.json({ estado: true, data: orden });
   } catch (error) {
     console.error("Error al actualizar orden:", error);
-    res.status(500).json({ estado: false, mensaje: error.message });
+    return res.status(500).json({ estado: false, mensaje: error.message });
   }
 };
