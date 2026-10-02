@@ -11,6 +11,7 @@ import ORDEN_COMPRA from './ordenCompra.model.js';
 import ITEM_ORDEN_COMPRA from './itemOrdenCompra.model.js';
 import ROL from './rol.model.js';
 
+
 // Relaciones Marca - Modelo
 MARCA.hasMany(MODELO, { foreignKey: 'marcaId' });
 MODELO.belongsTo(MARCA, { foreignKey: 'marcaId' });
@@ -46,7 +47,7 @@ EMPLEADO.hasMany(ORDEN_COMPRA, { foreignKey: 'empleadoId' });
 ORDEN_COMPRA.belongsTo(EMPLEADO, { foreignKey: 'empleadoId' });
 
 // Relaciones OrdenCompra - ItemOrdenCompra - Producto
-ORDEN_COMPRA.hasMany(ITEM_ORDEN_COMPRA, { foreignKey: 'ordenCompraId' });
+ORDEN_COMPRA.hasMany(ITEM_ORDEN_COMPRA, { foreignKey: 'ordenCompraId', as: 'items' });
 ITEM_ORDEN_COMPRA.belongsTo(ORDEN_COMPRA, { foreignKey: 'ordenCompraId' });
 
 PRODUCTO.hasMany(ITEM_ORDEN_COMPRA, { foreignKey: 'productoId' });
