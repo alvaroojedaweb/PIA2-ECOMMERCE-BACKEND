@@ -14,10 +14,7 @@ const router = Router();
 router.get("/mis-ordenes", verificarCliente, getMisOrdenes);
 router.post("/", verificarCliente, create);
 
-// Detalle: cliente dueño o admin (la validación se hace en el controller)
-// Necesitamos un middleware que acepte ambos. Lo hacemos con verificarCliente
-// para clientes y con verificarAdmin para admins... pero eso requiere 2 rutas.
-// Solución simple: aceptar ambos con verificarClienteOAdmin.
+
 import { verificarClienteOAdmin } from "../middleware/auth.js";
 router.get("/:id", verificarClienteOAdmin, getById);
 
