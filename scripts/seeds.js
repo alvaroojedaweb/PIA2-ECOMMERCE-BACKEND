@@ -251,12 +251,14 @@ async function cargarEmpleados() {
   const empleados = [
     {
       nombre: "Juan",
+      apellido: "Pérez",            
       email: "admin@celulartech.com",
       password: "12asdasAA345",
       rolId: 1,
     },
     {
       nombre: "María",
+      apellido: "Gómez",            
       email: "staff1@celulartech.com",
       password: "12asdasAA345",
       rolId: 2,
@@ -270,7 +272,7 @@ async function cargarEmpleados() {
       defaults: item,
     });
     if (creado) {
-      console.log(`Empleado creado: ${empleado.nombre}`);
+      console.log(`Empleado creado: ${empleado.nombre} ${empleado.apellido}`);
     } else {
       console.log(`Empleado ya existía: ${empleado.email}`);
     }

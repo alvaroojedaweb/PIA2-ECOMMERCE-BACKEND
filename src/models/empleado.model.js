@@ -15,6 +15,12 @@ const EMPLEADO = sequelize.define('EMPLEADO', {
     field: 'NOMBRE'
   },
 
+  apellido: {                          // ← NUEVO
+    type: DataTypes.STRING,
+    allowNull: true,
+    field: 'APELLIDO'
+  },
+
   email: {
     type: DataTypes.STRING,
     allowNull: false,
@@ -36,9 +42,7 @@ const EMPLEADO = sequelize.define('EMPLEADO', {
 }, {
   tableName: 'EMPLEADO',
   timestamps: true,
-  // Por defecto NUNCA se devuelve el hash. Igual que en CLIENTE.
   defaultScope: { attributes: { exclude: ['password'] } },
-  // Scope vacío = todos los campos. Solo para el login, que necesita el hash.
   scopes: { conPassword: {} },
 });
 
