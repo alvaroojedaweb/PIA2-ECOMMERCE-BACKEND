@@ -142,7 +142,7 @@ export const create = async (req, res) => {
       });
     }
 
-    if (typeof precio !== "number" || precio < 0) {
+    if (precio < 0) {
       return res.status(400).json({
         estado: false,
         mensaje: "El precio debe ser un número mayor o igual a 0",
