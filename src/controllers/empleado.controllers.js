@@ -16,6 +16,7 @@ export const getAll = async (req, res) => {
     const dataEmpleados = empleados.map((e) => ({
       id: e.id,
       nombre: e.nombre,
+      apellido: e.apellido || null,   
       email: e.email,
       rolId: e.rolId,
       rol: e.ROL?.nombre || null,
@@ -45,6 +46,7 @@ export const get = async (req, res) => {
     const empleadoData = {
       id: empleado.id,
       nombre: empleado.nombre,
+      apellido: empleado.apellido || null,
       email: empleado.email,
       rolId: empleado.rolId,
       rol: empleado.ROL?.nombre || null,
@@ -57,7 +59,7 @@ export const get = async (req, res) => {
 
 export const create = async (req, res) => {
   try {
-    const { nombre, email, password, rolId } = req.body;
+    const { nombre, apellido, email, password, rolId } = req.body;
 
     let passwordHash = password;
     if (password) {
@@ -66,6 +68,7 @@ export const create = async (req, res) => {
 
     const nuevoEmpleado = await EMPLEADO.create({
       nombre,
+      apellido: apellido || null,
       email,
       password: passwordHash, 
       rolId,
@@ -91,8 +94,7 @@ export const create = async (req, res) => {
 export const update = async (req, res) => {
   try {
     const { id_empleado } = req.params;
-    
-    const { nombre, email, password, rolId } = req.body;
+    const { nombre, apellido, email, password, rolId } = req.body;
     const empleado = await EMPLEADO.findByPk(id_empleado);
     if (!empleado)
       return res
@@ -104,7 +106,7 @@ export const update = async (req, res) => {
       passwordHash = await encriptarPassword(password);
     }
 
-    await empleado.update({ nombre, email, password: passwordHash, rolId });
+    await empleado.update({ nombre, apellido: apellido || null, email, password: passwordHash, rolId });
     res.json({ estado: true, data: empleado });
   } catch (error) {
     res.status(500).json({ estado: false, mensaje: error.message });

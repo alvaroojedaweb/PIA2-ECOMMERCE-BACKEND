@@ -1,17 +1,25 @@
-import { Router } from 'express';
-import { loginCliente, loginAdmin,  login, me  } from '../controllers/authController.js';
-import { crear } from '../controllers/cliente.controllers.js';
-import { verificarCliente } from '../middleware/auth.js';
+import { Router } from "express";
+import {
+  loginCliente,
+  loginAdmin,
+  me,
+} from "../controllers/authController.js";
+import { crear } from "../controllers/cliente.controllers.js";
+import { verificarClienteOAdmin } from "../middleware/auth.js";
 
 const router = Router();
 
-router.post('/register', crear);
+// Registro de clientes
+router.post("/register", crear);
 
-router.post('/login', login);                   
-router.get('/me', verificarCliente, me);         
+// Login de clientes (dos rutas para compatibilidad con el frontend)
+router.post("/login", loginCliente);
+router.post("/cliente/login", loginCliente);
 
-router.post('/cliente/login', loginCliente);
+// Login de empleados / admin
+router.post("/login-admin", loginAdmin);
 
-router.post('/login-admin', loginAdmin);
+// Perfil del usuario logueado (cliente o admin)
+router.get("/me", verificarClienteOAdmin, me);
 
 export default router;

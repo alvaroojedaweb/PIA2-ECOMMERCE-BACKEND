@@ -1,35 +1,58 @@
 import { loadEnvFile } from 'node:process';
-import cors from 'cors'
+import cors from 'cors';
 import express from 'express';
 import sequelize from './src/config/db.config.js';
 import routes from './src/routes/index.routes.js';
 
-loadEnvFile()
+loadEnvFile();
 
 const app = express();
-const PORT = process.env.APP_PORT || 3000;
+const PORT = process.env.APP_PORT || 2222;
 
-// Middleware 
+
 app.use(express.json());
 app.use(cors({
   origin: true,
-  credentials: true
+  credentials: true,
 }));
 
 
-// Ruta base de prueba
 app.get('/', (req, res) => {
   res.send('Backend funcionando!');
 });
 
-// Enrutador principal centralizado
 app.use('/api', routes);
 
 
-// Iniciar servidor 
+app.use((req, res) => {
+  res.status(404).json({
+    estado: false,
+    mensaje: `Ruta no encontrada: ${req.method} ${req.originalUrl}`,
+  });
+});
+
+
+
+app.use((err, req, res, next) => {
+  console.error('❌ Error no manejado:', err);
+
+  // Nunca exponer el stack trace en producción
+  const respuesta = {
+    estado: false,
+    mensaje: err.message || 'Error interno del servidor',
+  };
+
+  // En desarrollo, mostrar más info para debug
+  if (process.env.NODE_ENV !== 'production') {
+    respuesta.detalle = err.stack;
+  }
+
+  res.status(err.status || 500).json(respuesta);
+});
+
+
 async function startServer() {
   try {
-    // Inicia el servidor Express
     app.listen(PORT, () => {
       console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
     });
@@ -39,9 +62,8 @@ async function startServer() {
 
     await sequelize.sync({ force: false });
     console.log('✅ Base de datos sincronizada');
-
   } catch (error) {
-    console.error("❌ No se pudo conectar a la base de datos:", error);
+    console.error('❌ No se pudo conectar a la base de datos:', error);
   }
 }
 
