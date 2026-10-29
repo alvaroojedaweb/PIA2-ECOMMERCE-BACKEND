@@ -40,7 +40,6 @@ const includeCompleto = [
 ];
 
 // GET /api/productos
-// Acepta: ?page=, ?limit=, ?categoriaId=, ?marcaId=, ?q=
 export const getAll = async (req, res) => {
   try {
     const page = Math.max(parseInt(req.query.page, 10) || 1, 1);
@@ -53,7 +52,6 @@ export const getAll = async (req, res) => {
     if (categoriaId) where.categoriaId = categoriaId;
     if (q) where.nombre = { [Op.like]: `%${q}%` };
 
-    // Filtro por marca: se aplica en el include de MODELO
     const includeModelo = {
       model: MODELO,
       as: "MODELO",
@@ -133,7 +131,6 @@ export const create = async (req, res) => {
       modeloId,
     } = req.body;
 
-    // Validaciones básicas
     if (!nombre || !descripcion || !precio || !categoriaId || !modeloId) {
       return res.status(400).json({
         estado: false,
@@ -160,7 +157,16 @@ export const create = async (req, res) => {
       modeloId,
     });
 
-    // Recargamos con includes para devolver todo formateado
+    // Si vienen archivos en req.files, guardarlos en IMAGEN_PRODUCTO
+    if (req.files && req.files.length > 0) {
+      const imagenes = req.files.map((file, idx) => ({
+        productoId: nuevoProducto.id,
+        imagenUrl: `/uploads/${file.filename}`,
+        orden: idx + 1,
+      }));
+      await IMAGEN_PRODUCTO.bulkCreate(imagenes);
+    }
+
     const pCompleto = await PRODUCTO.findByPk(nuevoProducto.id, {
       include: includeCompleto,
     });
@@ -188,7 +194,7 @@ export const create = async (req, res) => {
   }
 };
 
-// PUT /api/productos/:id
+// PUT /api/productos/:id  ← ESTA ERA LA QUE FALTABA
 export const update = async (req, res) => {
   try {
     const { id } = req.params;
@@ -218,6 +224,16 @@ export const update = async (req, res) => {
     }
 
     await p.update(cambios);
+
+    // Si vienen archivos nuevos en req.files, agregarlos como nuevas imágenes
+    if (req.files && req.files.length > 0) {
+      const imagenes = req.files.map((file, idx) => ({
+        productoId: p.id,
+        imagenUrl: `/uploads/${file.filename}`,
+        orden: idx + 1,
+      }));
+      await IMAGEN_PRODUCTO.bulkCreate(imagenes);
+    }
 
     const pActualizado = await PRODUCTO.findByPk(id, {
       include: includeCompleto,
