@@ -1,6 +1,7 @@
 import db from '../models/index.model.js';
 const { CLIENTE } = db;
 import { encriptarPassword } from '../utils/auth.js';
+import { enviarBienvenida } from '../services/emailService.js';
 
 
 export const obtener = async (req, res) => {
@@ -77,6 +78,11 @@ export const crear = async (req, res) => {
             direccion,
             password: passwordHash
         });
+
+        enviarBienvenida(nuevoCliente).catch(err => {
+            console.error('Error al enviar mail de bienvenida:', err);
+        });
+
 
         const clienteResponse = nuevoCliente.toJSON();
         delete clienteResponse.password;
