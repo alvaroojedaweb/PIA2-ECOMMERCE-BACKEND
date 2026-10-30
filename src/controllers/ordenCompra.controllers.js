@@ -120,7 +120,7 @@ export const create = async (req, res) => {
       where: { clienteId },
       include: [{ model: PRODUCTO }],
       transaction: t,
-      lock: t.LOCK.UPDATE // 🔒 Protege contra condiciones de carrera bloqueando las filas de stock
+      lock: t.LOCK.UPDATE //  Protege contra condiciones de carrera bloqueando las filas de stock
     });
 
     if (itemsCarrito.length === 0) {
@@ -207,26 +207,26 @@ export const create = async (req, res) => {
     // Confirmar todos los cambios en la Base de Datos
     await t.commit();
 
-     try {
+         //  Enviar mails
+    try {
       const cliente = await CLIENTE.findByPk(clienteId);
-      // Recargar la orden con los items para que el mail los tenga
       const ordenCompletaParaMail = await ORDEN_COMPRA.findByPk(nuevaOrden.id, {
          include: [{ model: ITEM_ORDEN_COMPRA, as: "items", include: [{ model: PRODUCTO }] }]
       });
       
       if (cliente && ordenCompletaParaMail) {
-          // 1. Mail al cliente (inmediato)
+          // Enviar confirmación al cliente
           await enviarConfirmacionPedido(ordenCompletaParaMail, cliente);
           
-          // 2. Esperar 2 segundos (para no romper el límite de Mailtrap)
+          // Esperar 2 segundos (por el límite de velocidad)
           await new Promise(resolve => setTimeout(resolve, 2000));
           
-          // 3. Mail al admin
+          // Enviar aviso al admin
           await enviarNuevoPedidoAdmin(ordenCompletaParaMail, cliente);
       }
     } catch (mailError) {
-      console.error("Error al enviar mails de pedido:", mailError);}
-
+      console.error("Error al enviar mails de pedido:", mailError);
+    }
     // 6. Recargar la orden con items para devolverla limpia al cliente
     const ordenCompleta = await ORDEN_COMPRA.findByPk(nuevaOrden.id, {
       include: [
