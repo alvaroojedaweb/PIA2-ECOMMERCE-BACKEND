@@ -41,6 +41,17 @@ const CLIENTE = sequelize.define('CLIENTE', {
         allowNull: false,      
         field: 'PASSWORD' 
     },
+
+    resetToken: {
+        type: DataTypes.STRING(255),
+        allowNull: true,
+        field: 'reset_token',
+    },
+    resetTokenExpira: {
+        type: DataTypes.DATE,
+        allowNull: true,
+        field: 'reset_token_expira',
+    },
 }, {
     tableName: 'CLIENTE',
     timestamps: true,

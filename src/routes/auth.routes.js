@@ -3,6 +3,9 @@ import {
   loginCliente,
   loginAdmin,
   me,
+   forgotPassword, 
+  resetPassword,  
+
 } from "../controllers/authController.js";
 import { crear } from "../controllers/cliente.controllers.js";
 import { verificarClienteOAdmin } from "../middleware/auth.js";
@@ -21,5 +24,9 @@ router.post("/login-admin", loginAdmin);
 
 // Perfil del usuario logueado (cliente o admin)
 router.get("/me", verificarClienteOAdmin, me);
+
+// Recuperación de contraseña
+router.post("/forgot-password", forgotPassword); 
+router.post("/reset-password", resetPassword);   
 
 export default router;
