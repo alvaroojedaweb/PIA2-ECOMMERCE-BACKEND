@@ -4,7 +4,7 @@ const { PRODUCTO, MARCA, MODELO, CATEGORIA, IMAGEN_PRODUCTO } = db;
 
 // Formatea un producto para devolver al frontend.
 // Incluye marca, modelo, categoría e imágenes.
-const formatearProducto = (p) => ({
+const formatearProducto = (p, baseUrl) => ({
   id: p.id,
   nombre: p.nombre,
   descripcion: p.descripcion,
@@ -23,7 +23,9 @@ const formatearProducto = (p) => ({
   // Imágenes (el alias en el modelo es "imagenes")
   imagenes: (p.imagenes || []).map((img) => ({
     id: img.id,
-    url: img.imagenUrl,
+    url: img.imagenUrl.startsWith("/")
+      ? new URL(img.imagenUrl, baseUrl).toString()
+      : img.imagenUrl,
     orden: img.orden,
   })),
 });
@@ -78,7 +80,9 @@ export const getAll = async (req, res) => {
       totalPages: Math.ceil(count / limit) || 1,
       currentPage: page,
       limit,
-      data: rows.map(formatearProducto),
+      data: rows.map((producto) =>
+        formatearProducto(producto, `${req.protocol}://${req.get("host")}`)
+      ),
     });
   } catch (error) {
     console.error("Error al obtener productos:", error);
@@ -106,7 +110,10 @@ export const get = async (req, res) => {
       });
     }
 
-    res.json({ estado: true, data: formatearProducto(p) });
+    res.json({
+      estado: true,
+      data: formatearProducto(p, `${req.protocol}://${req.get("host")}`),
+    });
   } catch (error) {
     console.error("Error al obtener producto:", error);
     res.status(500).json({
