@@ -13,7 +13,7 @@ const router = Router();
 
 router.get('/producto/:id_producto', getAllByProducto);
 router.get('/:id_imagen', getById);
-router.post('/producto/:id_producto', verificarAdmin, create);
+router.post('/producto/:id_producto', verificarAdmin, upload.single('imagen'), create);
 router.put('/:id_imagen', verificarAdmin, upload.single('imagen'), update);
 router.delete('/:id_imagen/hard', verificarAdmin, hardDelete);
 
