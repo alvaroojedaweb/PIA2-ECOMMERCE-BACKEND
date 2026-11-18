@@ -180,7 +180,10 @@ export const create = async (req, res) => {
 
     res.status(201).json({
       estado: true,
-      data: formatearProducto(pCompleto),
+      data: formatearProducto(
+        pCompleto,
+        `${req.protocol}://${req.get("host")}`
+      ),
     });
   } catch (error) {
     console.error("Error al crear producto:", error.message);
@@ -248,7 +251,10 @@ export const update = async (req, res) => {
 
     res.json({
       estado: true,
-      data: formatearProducto(pActualizado),
+      data: formatearProducto(
+        pActualizado,
+        `${req.protocol}://${req.get("host")}`
+      ),
     });
   } catch (error) {
     console.error("Error al actualizar producto:", error);
