@@ -91,7 +91,6 @@ async function cargarCategorias() {
 // PRODUCTOS + IMÁGENES
 // ============================================================
 async function cargarProductos() {
-  // categoriaId 1 = Celulares, 2 = Accesorios
   const productos = [
     {
       nombre: "Samsung Galaxy A50",
@@ -145,7 +144,7 @@ async function cargarProductos() {
       stock: 50,
       pesoG: 60,
       imagenes: [
-        "https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?auto=format&fit=crop&w=800&q=80",
+        "https://images.unsplash.com/photo-1615526675159-e248c3021d3f?auto=format&fit=crop&w=800&q=80](https://images.unsplash.com/photo-1615526675159-e248c3021d3f?auto=format&fit=crop&w=800&q=80)",
       ],
     },
     {
@@ -174,18 +173,43 @@ async function cargarProductos() {
         "https://images.unsplash.com/photo-1583863788434-e58a36330cf0?auto=format&fit=crop&w=800&q=80",
       ],
     },
+    // ⚠️ NUEVOS PRODUCTOS
+    {
+      nombre: "Samsung Galaxy S24 Ultra",
+      modeloId: 1, // Usa A50 como modelo (o crea uno nuevo)
+      descripcion: "El último buque insignia de Samsung con pantalla Dynamic AMOLED 2X y S-Pen integrado.",
+      categoriaId: 1,
+      precio: 2199999,
+      almacenamientoGb: 512,
+      stock: 5,
+      pesoG: 232,
+      imagenes: [
+        "https://images.unsplash.com/photo-1610945415295-d9bbf067e59c?auto=format&fit=crop&w=800&q=80",
+      ],
+    },
+    {
+      nombre: "Auriculares Sony WH-1000XM5",
+      modeloId: 2, // Usa A52 como modelo
+      descripcion: "Auriculares inalámbricos con cancelación de ruido líder en la industria y sonido de alta resolución.",
+      categoriaId: 2,
+      precio: 450000,
+      almacenamientoGb: null,
+      stock: 15,
+      pesoG: 250,
+      imagenes: [
+        "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=800&q=80",
+      ],
+    },
   ];
 
   for (const item of productos) {
     const { imagenes, ...datosProducto } = item;
-
     const [producto, creado] = await PRODUCTO.findOrCreate({
       where: { nombre: item.nombre },
       defaults: datosProducto,
     });
     console.log(`Producto ${creado ? "creado" : "ya existía"}: ${producto.nombre}`);
 
-    // Cargar imágenes solo si el producto es nuevo
     if (creado && imagenes && imagenes.length > 0) {
       for (let i = 0; i < imagenes.length; i++) {
         await IMAGEN_PRODUCTO.create({
@@ -211,6 +235,7 @@ async function cargarClientes() {
       telefono: "1122334455",
       direccion: "Calle Falsa 123",
       password: "123456",
+      emailConfirmado: true, // ⚠️ IMPORTANTE PARA LA DEMO
     },
     {
       nombre: "María",
@@ -219,6 +244,7 @@ async function cargarClientes() {
       telefono: "1155443322",
       direccion: "Av. Siempre Viva 742",
       password: "123456",
+      emailConfirmado: true,
     },
     {
       nombre: "Carlos",
@@ -227,6 +253,7 @@ async function cargarClientes() {
       telefono: "3415556677",
       direccion: "Bulevar Oroño 456",
       password: "123456",
+      emailConfirmado: true,
     },
   ];
 
@@ -236,11 +263,7 @@ async function cargarClientes() {
       where: { email: item.email },
       defaults: item,
     });
-    if (creado) {
-      console.log(`Cliente creado: ${cliente.nombre} ${cliente.apellido}`);
-    } else {
-      console.log(`Cliente ya existía: ${cliente.email}`);
-    }
+    console.log(`Cliente ${creado ? "creado" : "ya existía"}: ${cliente.nombre} ${cliente.apellido}`);
   }
 }
 
