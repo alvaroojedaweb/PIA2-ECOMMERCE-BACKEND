@@ -1,4 +1,7 @@
 import db from "../models/index.model.js";
+import { enviarConfirmacionPedido, enviarNuevoPedidoAdmin } from '../services/emailService.js';
+import { enviarCambioEstado } from '../services/emailService.js';
+
 const {
   sequelize,
   ORDEN_COMPRA,
@@ -204,6 +207,26 @@ export const create = async (req, res) => {
     // Confirmar todos los cambios en la Base de Datos
     await t.commit();
 
+     try {
+      const cliente = await CLIENTE.findByPk(clienteId);
+      // Recargar la orden con los items para que el mail los tenga
+      const ordenCompletaParaMail = await ORDEN_COMPRA.findByPk(nuevaOrden.id, {
+         include: [{ model: ITEM_ORDEN_COMPRA, as: "items", include: [{ model: PRODUCTO }] }]
+      });
+      
+      if (cliente && ordenCompletaParaMail) {
+          // 1. Mail al cliente (inmediato)
+          await enviarConfirmacionPedido(ordenCompletaParaMail, cliente);
+          
+          // 2. Esperar 2 segundos (para no romper el límite de Mailtrap)
+          await new Promise(resolve => setTimeout(resolve, 2000));
+          
+          // 3. Mail al admin
+          await enviarNuevoPedidoAdmin(ordenCompletaParaMail, cliente);
+      }
+    } catch (mailError) {
+      console.error("Error al enviar mails de pedido:", mailError);}
+
     // 6. Recargar la orden con items para devolverla limpia al cliente
     const ordenCompleta = await ORDEN_COMPRA.findByPk(nuevaOrden.id, {
       include: [
@@ -248,7 +271,23 @@ export const update = async (req, res) => {
       if (req.body[k] !== undefined) cambios[k] = req.body[k];
     }
 
+
+    const estadoAnterior = orden.estado;
+
     await orden.update(cambios);
+
+     if (cambios.estado && cambios.estado !== estadoAnterior) {
+      try {
+        const cliente = await CLIENTE.findByPk(orden.clienteId);
+        if (cliente) {
+          await enviarCambioEstado(orden, cliente, cambios.estado);
+        }
+      } catch (mailError) {
+        console.error("Error al enviar mail de cambio de estado:", mailError);
+      }
+    }
+
+    
     return res.json({ estado: true, data: orden });
   } catch (error) {
     console.error("Error al actualizar orden:", error);
