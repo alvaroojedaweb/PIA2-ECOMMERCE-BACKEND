@@ -41,6 +41,26 @@ const CLIENTE = sequelize.define('CLIENTE', {
         allowNull: false,      
         field: 'PASSWORD' 
     },
+    emailConfirmado: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false,
+        field: 'email_confirmado'
+    },
+    confirmToken: {
+        type: DataTypes.STRING(255),
+        allowNull: true,
+        field: 'confirm_token'
+    },
+    resetPasswordToken: {
+        type: DataTypes.STRING(255),
+        allowNull: true,
+        field: 'reset_password_token'
+    },
+    resetPasswordExpires: {
+        type: DataTypes.DATE,
+        allowNull: true,
+        field: 'reset_password_expires'
+    },
 }, {
     tableName: 'CLIENTE',
     timestamps: true,
