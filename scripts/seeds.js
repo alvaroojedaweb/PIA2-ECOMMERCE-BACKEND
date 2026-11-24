@@ -398,12 +398,14 @@ async function cargarOrdenesDemo(clientes, productos) {
       productoId: productos[2].id,
       cantidad: 1,
       precioUnitario: productos[2].precio,
+      subtotal: productos[2].precio,
     },
     {
       ordenCompraId: orden1.id,
       productoId: productos[9].id,
       cantidad: 1,
       precioUnitario: productos[9].precio,
+      subtotal: productos[9].precio,
     },
   ]);
 
@@ -420,6 +422,7 @@ async function cargarOrdenesDemo(clientes, productos) {
     productoId: productos[3].id,
     cantidad: 1,
     precioUnitario: productos[3].precio,
+    subtotal: productos[3].precio,
   });
 
   console.log("✅ 2 órdenes de compra demo cargadas.");
@@ -451,6 +454,7 @@ const runSeed = async () => {
 };
 
 runSeed();
+
 
 
 
