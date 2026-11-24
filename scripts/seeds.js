@@ -387,7 +387,7 @@ async function cargarOrdenesDemo(clientes, productos) {
   const orden1 = await ORDEN_COMPRA.create({
     clienteId: clientes[0].id,
     total: Number(productos[2].precio) + Number(productos[9].precio),
-    estado: "enviado",
+    estado: "enviada",
     direccionEnvio: "Av. Colón 1250, Córdoba Capital",
     notas: "Entregar en recepción de 9 a 18 hs.",
   });
@@ -410,7 +410,7 @@ async function cargarOrdenesDemo(clientes, productos) {
   const orden2 = await ORDEN_COMPRA.create({
     clienteId: clientes[1].id,
     total: Number(productos[3].precio),
-    estado: "enviado",
+    estado: "enviada",
     direccionEnvio: "Bv. San Juan 450, Piso 3, Córdoba",
     notas: "Timbre 3B.",
   });
@@ -451,5 +451,6 @@ const runSeed = async () => {
 };
 
 runSeed();
+
 
 
