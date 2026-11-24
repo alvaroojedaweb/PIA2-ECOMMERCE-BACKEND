@@ -95,6 +95,7 @@ async function cargarProductos() {
       imagenes: [
         "https://images.unsplash.com/photo-1695048133142-1a20484d2569?auto=format&fit=crop&w=800&q=80",
         "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=800&q=80",
+        "https://images.unsplash.com/photo-1510557880182-3d4d3cba35a5?auto=format&fit=crop&w=800&q=80",
       ],
     },
     {
@@ -108,6 +109,8 @@ async function cargarProductos() {
       pesoG: 232,
       imagenes: [
         "https://images.unsplash.com/photo-1610945415295-d9bbf067e59c?auto=format&fit=crop&w=800&q=80",
+        "https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?auto=format&fit=crop&w=800&q=80",
+        "https://images.unsplash.com/photo-1565849904461-04a58ad377e0?auto=format&fit=crop&w=800&q=80",
       ],
     },
     {
@@ -122,6 +125,7 @@ async function cargarProductos() {
       imagenes: [
         "https://images.unsplash.com/photo-1598327105666-5b89351aff97?auto=format&fit=crop&w=800&q=80",
         "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=800&q=80",
+        "https://images.unsplash.com/photo-1580910051074-3eb694886505?auto=format&fit=crop&w=800&q=80",
       ],
     },
     {
@@ -136,6 +140,7 @@ async function cargarProductos() {
       imagenes: [
         "https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?auto=format&fit=crop&w=800&q=80",
         "https://images.unsplash.com/photo-1567581935884-3349723552ca?auto=format&fit=crop&w=800&q=80",
+        "https://images.unsplash.com/photo-1523206489230-c012c64b2b48?auto=format&fit=crop&w=800&q=80",
       ],
     },
     {
@@ -149,6 +154,8 @@ async function cargarProductos() {
       pesoG: 186,
       imagenes: [
         "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=800&q=80",
+        "https://images.unsplash.com/photo-1580910051074-3eb694886505?auto=format&fit=crop&w=800&q=80",
+        "https://images.unsplash.com/photo-1546054454-aa26e2b734c7?auto=format&fit=crop&w=800&q=80",
       ],
     },
     {
@@ -162,6 +169,8 @@ async function cargarProductos() {
       pesoG: 171,
       imagenes: [
         "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=800&q=80",
+        "https://images.unsplash.com/photo-1695048133142-1a20484d2569?auto=format&fit=crop&w=800&q=80",
+        "https://images.unsplash.com/photo-1556656793-08538906a9f8?auto=format&fit=crop&w=800&q=80",
       ],
     },
     {
@@ -175,6 +184,8 @@ async function cargarProductos() {
       pesoG: 188,
       imagenes: [
         "https://images.unsplash.com/photo-1567581935884-3349723552ca?auto=format&fit=crop&w=800&q=80",
+        "https://images.unsplash.com/photo-1598327105666-5b89351aff97?auto=format&fit=crop&w=800&q=80",
+        "https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?auto=format&fit=crop&w=800&q=80",
       ],
     },
     {
@@ -188,6 +199,8 @@ async function cargarProductos() {
       pesoG: 168,
       imagenes: [
         "https://images.unsplash.com/photo-1580910051074-3eb694886505?auto=format&fit=crop&w=800&q=80",
+        "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=800&q=80",
+        "https://images.unsplash.com/photo-1533228100845-08145b01de14?auto=format&fit=crop&w=800&q=80",
       ],
     },
     {
@@ -201,6 +214,8 @@ async function cargarProductos() {
       pesoG: 250,
       imagenes: [
         "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=800&q=80",
+        "https://images.unsplash.com/photo-1546435770-a3e426bf472b?auto=format&fit=crop&w=800&q=80",
+        "https://images.unsplash.com/photo-1583394838336-acd977736f90?auto=format&fit=crop&w=800&q=80",
       ],
     },
     {
@@ -214,6 +229,8 @@ async function cargarProductos() {
       pesoG: 90,
       imagenes: [
         "https://images.unsplash.com/photo-1583863788434-e58a36330cf0?auto=format&fit=crop&w=800&q=80",
+        "https://images.unsplash.com/photo-1615526675159-e248c3021d3f?auto=format&fit=crop&w=800&q=80",
+        "https://images.unsplash.com/photo-1585338107529-13afc5f02586?auto=format&fit=crop&w=800&q=80",
       ],
     },
     {
@@ -227,6 +244,8 @@ async function cargarProductos() {
       pesoG: 60,
       imagenes: [
         "https://images.unsplash.com/photo-1615526675159-e248c3021d3f?auto=format&fit=crop&w=800&q=80",
+        "https://images.unsplash.com/photo-1583863788434-e58a36330cf0?auto=format&fit=crop&w=800&q=80",
+        "https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?auto=format&fit=crop&w=800&q=80",
       ],
     },
     {
@@ -240,6 +259,8 @@ async function cargarProductos() {
       pesoG: 40,
       imagenes: [
         "https://images.unsplash.com/photo-1601784551446-20c9e07cdbdb?auto=format&fit=crop&w=800&q=80",
+        "https://images.unsplash.com/photo-1586953208448-b95a79798f07?auto=format&fit=crop&w=800&q=80",
+        "https://images.unsplash.com/photo-1541807084-5c52b6b3adef?auto=format&fit=crop&w=800&q=80",
       ],
     },
     {
@@ -253,6 +274,8 @@ async function cargarProductos() {
       pesoG: 55,
       imagenes: [
         "https://images.unsplash.com/photo-1590658268037-6bf12165a8df?auto=format&fit=crop&w=800&q=80",
+        "https://images.unsplash.com/photo-1606220588913-b3aacb4d2f46?auto=format&fit=crop&w=800&q=80",
+        "https://images.unsplash.com/photo-1572569511254-d8f925fe2cbb?auto=format&fit=crop&w=800&q=80",
       ],
     },
     {
@@ -266,6 +289,8 @@ async function cargarProductos() {
       pesoG: 340,
       imagenes: [
         "https://images.unsplash.com/photo-1609091839311-d5365f9ff1c5?auto=format&fit=crop&w=800&q=80",
+        "https://images.unsplash.com/photo-1618410320928-25228d811631?auto=format&fit=crop&w=800&q=80",
+        "https://images.unsplash.com/photo-1583863788434-e58a36330cf0?auto=format&fit=crop&w=800&q=80",
       ],
     },
   ];
@@ -280,7 +305,8 @@ async function cargarProductos() {
     console.log(`Producto ${creado ? "creado" : "ya existía"}: ${producto.nombre}`);
     creados.push(producto);
 
-    if (creado && imagenes && imagenes.length > 0) {
+    if (imagenes && imagenes.length > 0) {
+      await IMAGEN_PRODUCTO.destroy({ where: { productoId: producto.id } });
       for (let i = 0; i < imagenes.length; i++) {
         await IMAGEN_PRODUCTO.create({
           productoId: producto.id,
@@ -292,7 +318,6 @@ async function cargarProductos() {
   }
   return creados;
 }
-
 async function cargarClientes() {
   const clientes = [
     {
@@ -426,3 +451,4 @@ const runSeed = async () => {
 };
 
 runSeed();
+
