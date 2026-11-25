@@ -65,7 +65,7 @@ export const getAll = async (req, res) => {
       where,
       limit,
       offset,
-      order: [["id", "ASC"]],
+      order: [["id", "DESC"]],
       include: [
         includeModelo,
         { model: CATEGORIA, as: "CATEGORIA" },
